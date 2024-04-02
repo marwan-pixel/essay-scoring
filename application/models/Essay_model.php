@@ -1,6 +1,6 @@
 <?php
 class Essay_model extends CI_Model {    
-    public function add_matkul($data, string $table) {
+    public function add_data($data, string $table) {
         return $this->db->insert($table, $data);
     }
 

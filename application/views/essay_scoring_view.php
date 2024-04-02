@@ -51,10 +51,14 @@
                             <label for="inputJawaban">Jawaban Mahasiswa</label>
                             <textarea name="input_jawaban" id="inputJawaban" cols="30" rows="10" class="form-control"></textarea>
                         </div>
+                        <input hidden type="text" name="input_kunci_jawaban" value="<?= $soal[0]->kunci_jawaban; ?>">
+                        <input hidden type="number" name="input_skor" value="<?= $soal[0]->skor; ?>">
+                        <input hidden type="number" name="input_bobot" value="<?= $soal[0]->bobot; ?>">
                         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
                             <button type="submit" class="btn btn-primary">Simpan Jawaban</button>
                         </div>
                     </form>
+                    
                 </div>
             </div>
         </div>
