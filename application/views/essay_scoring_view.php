@@ -28,6 +28,7 @@
         </tr>
     </tbody>
 </table>
+
 <div class="d-grid gap-2 d-md-flex justify-content-md-end">
     <button class="btn btn-primary my-2" data-bs-toggle="modal" data-bs-target="#tambahDataJawaban"><i class="bi bi-plus-circle me-1"></i> Jawaban</button>
     <div class="modal fade" id="tambahDataJawaban" tabindex="-1" aria-labelledby="tambahDataJawabanLabel" aria-hidden="true">
@@ -38,7 +39,7 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form action="<?= base_url('input_jawaban');?>" method="post">
+                    <form action="<?= base_url('input_jawaban'); ?>" method="post">
                         <div class="mb-3">
                             <label for="inputNPM">NPM</label>
                             <input type="number" class="form-control" name="input_npm" id="inputNPM">
@@ -58,7 +59,7 @@
                             <button type="submit" class="btn btn-primary">Simpan Jawaban</button>
                         </div>
                     </form>
-                    
+
                 </div>
             </div>
         </div>
@@ -88,9 +89,9 @@
                     <td class="col-1"><?= $value->nama_mahasiswa; ?></td>
                     <td class="col-3"><?= $soal[0]->kunci_jawaban; ?></td>
                     <td class="col-4"><?= $value->jawaban; ?></td>
-                    <td><?= $value->nilai; ?></td>
+                    <td></td>
                     <td>
-                        <div class="d-grid gap-2 d-md-block">
+                        <div class="d-grid gap-2 col-6 mx-auto">
                             <button class="btn btn-success" data-bs-target="#detailNilai" data-bs-toggle="modal">Detail Nilai</button>
                             <button class="btn btn-warning" data-bs-target="#ubahJawaban" data-bs-toggle="modal">Ubah Jawaban</button>
                         </div>
@@ -116,7 +117,48 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                ...
+                <section class="pre-processing-text">
+                    <h4 class="mb-3">Pre-Processing Jawaban dan Kunci Jawaban</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Hasil Pre-Processing Kunci Jawaban</h5>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <p><?= ($hasil->pre_processing_kj) ;?></p>
+                                </div>
+                            </div>
+                            <h5>Hasil Pre-Processing Jawaban</h5>
+                           <div class="card mb-3">
+                                <div class="card-body">
+                                    <p><?=($hasil->pre_processing_jawaban) ;?></p>
+                                </div>
+                           </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="tokenisasi-text mt-3">
+                    <h4 class="mb-3">Tokenisasi Jawaban dan Kunci Jawaban</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="mb-3">Nilai K-Gram: 3</h5>
+                            <h5>Hasil Tokenisasi Kunci Jawaban</h5>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <p><?= ($hasil->tokenisasi_kj) ;?></p>
+                                </div>
+                            </div>
+                            <h5>Hasil Tokenisasi Jawaban</h5>
+                           <div class="card mb-3">
+                                <div class="card-body">
+                                    <p><?=($hasil->tokenisasi_jawaban) ;?></p>
+                                </div>
+                           </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="hashing-text mt-3">
+                    <h4 class="mb-3">Hashing Jawaban dan Kunci Jawaban</h4>
+                </section>
             </div>
         </div>
     </div>
