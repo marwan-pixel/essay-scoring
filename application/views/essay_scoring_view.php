@@ -7,7 +7,7 @@
                 <p class="fw-bold">NPM</p>
             </td>
             <td>
-                <p></p>
+                <p><?= $mahasiswa[0]->npm; ?></p>
             </td>
         </tr>
         <tr>
@@ -15,7 +15,7 @@
                 <p class="fw-bold">Nama Mahasiswa</p>
             </td>
             <td>
-                <p></p>
+                <p><?= $mahasiswa[0]->nama_mahasiswa; ?></p>
             </td>
         </tr>
         <tr>
@@ -23,7 +23,7 @@
                 <p class="fw-bold">Kelas</p>
             </td>
             <td>
-                <p></p>
+                <p><?= $mahasiswa[0]->kelas; ?></p>
             </td>
         </tr>
         <tr>
@@ -53,88 +53,34 @@
     </tbody>
 </table>
 
-<form>
+<form action="<?= count($jawaban) === 0 ? base_url('input_jawaban') : base_url('update_jawaban') . '/' . $mahasiswa[0]->npm . '/' .  $jawaban[0]->kd_jawaban; ?>" method="post">
+    <input hidden type="text" name="input_npm" value="<?= $mahasiswa[0]->npm; ?>">
+    <input hidden type="text" name="input_mahasiswa" value="<?= $mahasiswa[0]->nama_mahasiswa; ?>">
+    <input hidden type="text" name="input_mahasiswa" value="<?= $mahasiswa[0]->nama_mahasiswa; ?>">
+    <input hidden type="text" name="kd_soal" value="<?= $kd_soal; ?>">
+    <input hidden type="number" name="input_skor" value="<?= $soal[0]->skor; ?>">
+    <input hidden type="number" name="input_bobot" value="<?= $soal[0]->bobot; ?>">
+    <input hidden type="text" name="input_kd_jawaban" value="<?= $jawaban[0]->kd_jawaban ?? ''; ?>">
+    <textarea hidden name="input_kunci_jawaban" cols="30" rows="10"><?= $soal[0]->kunci_jawaban; ?></textarea>
     <label class="form-label" for="jawaban">Jawaban Esai</label>
-    <textarea name="" id="jawaban" class="form-control" cols="150" rows="10"></textarea>
-    <button class="btn btn-primary my-2" data-bs-toggle="modal" data-bs-target="#tambahDataJawaban"><i class="bi bi-plus-circle me-1"></i> Simpan Jawaban</button>
-    <!-- <div class="modal fade" id="tambahDataJawaban" tabindex="-1" aria-labelledby="tambahDataJawabanLabel" aria-hidden="true">
-        <div class="modal-dialog modal-lg">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="tambahDataJawabanLabel">Modal title</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form action="<?= base_url('input_jawaban'); ?>" method="post">
-                        <div class="mb-3">
-                            <label for="inputNPM">NPM</label>
-                            <input type="number" class="form-control" name="input_npm" id="inputNPM">
-                        </div>
-                        <div class="mb-3">
-                            <label for="inputNPM">Nama Mahasiswa</label>
-                            <input type="text" class="form-control" name="input_mahasiswa" id="inputNPM">
-                        </div>
-                        <div class="mb-3">
-                            <label for="inputJawaban">Jawaban Mahasiswa</label>
-                            <textarea name="input_jawaban" id="inputJawaban" cols="30" rows="10" class="form-control"></textarea>
-                        </div>
-                        <input hidden type="text" name="input_kunci_jawaban" value="<?= $soal[0]->kunci_jawaban; ?>">
-                        <input hidden type="number" name="input_skor" value="<?= $soal[0]->skor; ?>">
-                        <input hidden type="number" name="input_bobot" value="<?= $soal[0]->bobot; ?>">
-                        <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-                            <button type="submit" class="btn btn-primary">Simpan Jawaban</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div> -->
-</form>
-
-<!-- <table class="table">
-    <thead>
-        <tr>
-            <th>No</th>
-            <th>NPM</th>
-            <th>Nama Mahasiswa</th>
-            <th>Kunci Jawaban</th>
-            <th>Jawaban</th>
-            <th>Nilai</th>
-            <th>Aksi</th>
-        </tr>
-    </thead>
-    <tbody class="table-group-divider">
+    <textarea name="input_jawaban" id="jawaban" class="form-control" cols="50" rows="10"><?= $jawaban[0]->jawaban ?? ''; ?>
+    </textarea>
+    <div class="d-grip gap-2 d-md-flex justify-content-md-end">
         <?php
-        if (count($jawaban) !== 0) {
-            foreach ($jawaban as $key => $value) {
+        if (count($jawaban) > 0) {
         ?>
-                <tr>
-                    <td><?= $key + 1; ?></td>
-                    <td><?= $value->npm; ?></td>
-                    <td class="col-1"><?= $value->nama_mahasiswa; ?></td>
-                    <td class="col-3"><?= $soal[0]->kunci_jawaban; ?></td>
-                    <td class="col-4"><?= $value->jawaban; ?></td>
-                    <td><?= ($hasil[0]->skor) / $soal[0]->skor * $soal[0]->bobot; ?></td>
-                    <td>
-                        <div class="d-grid gap-2 col-6 mx-auto">
-                            <button class="btn btn-success" data-bs-target="#detailNilai" data-bs-toggle="modal">Detail Nilai</button>
-                            <button class="btn btn-warning" data-bs-target="#ubahJawaban" data-bs-toggle="modal">Ubah Jawaban</button>
-                        </div>
-                    </td>
-                </tr>
-            <?php
-            }
-        } else { ?>
-            <tr>
-                <td colspan="7">
-                    <p class="text-center">Jawaban Belum Tersedia</p>
-                </td>
-            </tr>
-        <?php }
+            <button class="btn btn-primary my-2" type="submit"> <i class="bi bi-save"></i> Ubah Jawaban</button>
+            <button class="btn btn-success my-2" type="button" data-bs-toggle="modal" data-bs-target="#detailNilai"><i class="bi bi-search"></i> Detail Jawaban</button>
+        <?php
+        } else {
         ?>
-    </tbody>
-</table> -->
+            <button class="btn btn-primary my-2" type="submit"><i class="bi bi-floppy me-1"></i> Simpan Jawaban</button>
+        <?php
+        }
+        ?>
 
+    </div>
+</form>
 
 <div class="modal fade" id="detailNilai" tabindex="-1" aria-labelledby="detailNilaiLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">

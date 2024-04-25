@@ -79,6 +79,28 @@ class Essay_Controller extends Essay
         }
     }
 
+    public function update_jawaban_mhs($npm, $kd_jawaban)
+    {
+        if ($this->input->method() === 'post') {
+            $this->jawaban_essay = array(
+                'kd_jawaban' =>  $this->input->post('input_kd_jawaban'),
+                'jawaban' => $this->input->post('input_jawaban'),
+            );
+            $remove_breakline_jawaban = str_replace(PHP_EOL, ' ', $this->jawaban_essay['jawaban']);
+            $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('input_kunci_jawaban'));
+            $final_score = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: $this->input->post('input_skor'), bobot: $this->input->post('input_bobot'));
+            $final_score['kd_jawaban'] = $this->jawaban_essay['kd_jawaban'];
+            // var_dump($final_score);
+            $jawaban_saved = $this->essay_model->update_data(table: 'jawaban_mahasiswa', data: $this->jawaban_essay, param: ['kd_jawaban' => $kd_jawaban, 'npm' => $npm]);
+
+            unset($final_score['skor_akhir']);
+            $hasil_jawaban_saved = $this->essay_model->update_data(table: 'hasil_algoritma', data: $final_score, param: ['kd_jawaban' => $kd_jawaban]);
+            if ($jawaban_saved && $hasil_jawaban_saved) {
+                redirect(base_url('essay_scoring_view/' . $this->session->userdata('kd_soal') . '/' . $npm));
+            }
+        }
+    }
+
     private function essay_scoring(string $jawaban, string $kunci_jawaban, int $max_score, int $bobot)
     {
         $preprocessed_answer = $this->text_preprocessing($jawaban);
