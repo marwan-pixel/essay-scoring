@@ -38,15 +38,19 @@ class Essay_Controller extends Essay {
     public function add_jawaban_mhs() {
         if($this->input->method() === 'post') {
             $this->jawaban_essay = array(
+                'kd_jawaban' =>  $this->session->userdata('kd_soal') . rand(0, 10),
                 'kd_soal' => $this->session->userdata('kd_soal'),
                 'npm' => $this->input->post('input_npm'),
                 'nama_mahasiswa' => $this->input->post('input_mahasiswa'),
                 'jawaban' => $this->input->post('input_jawaban'),
             );
-            $remove_breakline_jawaban = str_replace(PHP_EOL, '', $this->jawaban_essay['jawaban']);
-            $remove_breakline_kj = str_replace(PHP_EOL, '', $this->input->post('input_kunci_jawaban'));
+            $remove_breakline_jawaban = str_replace(PHP_EOL, ' ', $this->jawaban_essay['jawaban']);
+            $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('input_kunci_jawaban'));
             $final_score = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: $this->input->post('input_skor'), bobot: $this->input->post('input_bobot'));
+            $final_score['kd_jawaban'] = $this->jawaban_essay['kd_jawaban'];
+            // var_dump($final_score);
             $jawaban_saved = $this->essay_model->add_data(table: 'jawaban_mahasiswa', data: $this->jawaban_essay);
+            
             unset($final_score['skor_akhir']);
             $hasil_jawaban_saved = $this->essay_model->add_data(table: 'hasil_algoritma', data: $final_score);
             if($jawaban_saved && $hasil_jawaban_saved) {
@@ -58,12 +62,12 @@ class Essay_Controller extends Essay {
     private function essay_scoring(string $jawaban, string $kunci_jawaban, int $max_score, int $bobot) {
         $preprocessed_answer = $this->text_preprocessing($jawaban);
         $preprocessed_key_answer = $this->text_preprocessing($kunci_jawaban);
-        $tokenized_answer = $this->tokenization($preprocessed_answer, 3);
-        $tokenized_key_answer = $this->tokenization($preprocessed_key_answer, 3);
+        $tokenized_answer = $this->tokenization($preprocessed_answer, 2);
+        $tokenized_key_answer = $this->tokenization($preprocessed_key_answer, 2);
         $hashing_answer = $this->rolling_hash($tokenized_answer, 4);
         $hashing_key_answer = $this->rolling_hash($tokenized_key_answer, 4);
-        $winnowing_answer = $this->winnowing($hashing_answer, 5);
-        $winnowing_key_answer = $this->winnowing($hashing_key_answer, 5);
+        $winnowing_answer = $this->winnowing($hashing_answer, 3);
+        $winnowing_key_answer = $this->winnowing($hashing_key_answer, 3);
         $similarity = $this->cosine_similarity(kunci_jawaban: $winnowing_key_answer, jawaban: $winnowing_answer);
         if($similarity === 0) {
             $score = 0;
@@ -91,10 +95,12 @@ class Essay_Controller extends Essay {
              'similarity' => $similarity, 
              'skor' => $score, 
              'skor_akhir' => $final_score);
+        // return $preprocessed_answer;
     }
 
     private function text_preprocessing(string $kalimat) {
         $case_folding_kalimat = preg_replace('/[^\p{L}\s\s+]/u', "", strtolower($kalimat));
+        // return $case_folding_kalimat;
         exec('python '. APPPATH .'controllers/python/essay.py '. escapeshellarg($case_folding_kalimat), $output);
         return ($output[0]);
     }

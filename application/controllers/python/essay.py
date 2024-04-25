@@ -1,4 +1,3 @@
-import json
 import sys
 import nltk
 from Sastrawi.Stemmer.StemmerFactory import StemmerFactory
@@ -43,6 +42,3 @@ if len(sys.argv[1]) > 1:
     print(stemming(sentence_result))
 else:
     print('Hello')
-
-
-    

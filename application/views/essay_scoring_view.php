@@ -89,7 +89,7 @@
                     <td class="col-1"><?= $value->nama_mahasiswa; ?></td>
                     <td class="col-3"><?= $soal[0]->kunci_jawaban; ?></td>
                     <td class="col-4"><?= $value->jawaban; ?></td>
-                    <td></td>
+                    <td><?= ($hasil[0]->skor) / $soal[0]->skor * $soal[0]->bobot;?></td>
                     <td>
                         <div class="d-grid gap-2 col-6 mx-auto">
                             <button class="btn btn-success" data-bs-target="#detailNilai" data-bs-toggle="modal">Detail Nilai</button>
@@ -124,13 +124,13 @@
                             <h5>Hasil Pre-Processing Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil->pre_processing_kj) ;?></p>
+                                    <p><?= ($hasil[0]->pre_processing_kj) ;?></p>
                                 </div>
                             </div>
                             <h5>Hasil Pre-Processing Jawaban</h5>
                            <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?=($hasil->pre_processing_jawaban) ;?></p>
+                                    <p><?=($hasil[0]->pre_processing_jawaban) ;?></p>
                                 </div>
                            </div>
                         </div>
@@ -144,13 +144,13 @@
                             <h5>Hasil Tokenisasi Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil->tokenisasi_kj) ;?></p>
+                                    <p><?= ($hasil[0]->tokenisasi_kj) ;?></p>
                                 </div>
                             </div>
                             <h5>Hasil Tokenisasi Jawaban</h5>
                            <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?=($hasil->tokenisasi_jawaban) ;?></p>
+                                    <p><?=($hasil[0]->tokenisasi_jawaban) ;?></p>
                                 </div>
                            </div>
                         </div>
@@ -158,6 +158,76 @@
                 </section>
                 <section class="hashing-text mt-3">
                     <h4 class="mb-3">Hashing Jawaban dan Kunci Jawaban</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="mb-3">Nilai Hashing: 4</h5>
+                            <h5>Hasil Hashing Kunci Jawaban</h5>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <p><?=($hasil[0]->hashing_kj) ;?></p>
+                                </div>
+                            </div>
+                            <h5>Hasil Hashing Jawaban</h5>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <p><?=($hasil[0]->hashing_jawaban) ;?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="winnowing-text mt-3">
+                    <h4 class="mb-3">Winnowing Jawaban dan Kunci Jawaban</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5 class="mb-3">Nilai Winnow: 6</h5>
+                            <h5>Hasil Winnowing Kunci Jawaban</h5>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <p><?=($hasil[0]->winnowing_kj) ;?></p>
+                                </div>
+                            </div>
+                            <h5>Hasil Winnowing Jawaban</h5>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <p><?=($hasil[0]->winnowing_jawaban) ;?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="cosineSimilarity-text mt-3">
+                    <h4 class="mb-3">Cosine Similarity Jawaban dan Kunci Jawaban</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Hasil Cosine Similarity</h5>
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <p><?=($hasil[0]->similarity) ;?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                <section class="cosineSimilarity-text mt-3">
+                    <h4 class="mb-3">Nilai Perolehan</h4>
+                    <div class="card">
+                        <div class="card-body">
+                            <h5>Hasil Nilai Perolehan</h5>
+                            <h5>Skor Perolehan: <?= ($hasil[0]->skor); ?></h5>
+                            <h5>Skor Maksimal: <?= ($soal[0]->skor); ?></h5>
+                            <h5>Bobot: <?= $soal[0]->bobot;?></h5>
+
+                            <h5>Nilai Perolehan = Skor Perolehan / Skor Maksimal * Bobot</h5>
+
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    
+                                    <p><?= ($hasil[0]->skor) / $soal[0]->skor * $soal[0]->bobot;?></p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </section>
             </div>
         </div>

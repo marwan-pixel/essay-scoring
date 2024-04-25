@@ -49,10 +49,12 @@ class Essay extends CI_Controller {
     public function essay_scoring_view($kd_soal) {
         $this->session->set_userdata('kd_soal', $kd_soal);
         $this->soal_matakuliah = $this->essay_model->show_data('soal, skor, bobot, kunci_jawaban', 'soal_esai' ,['kd_soal' => $kd_soal]);
-        $this->jawaban_essay = $this->essay_model->show_data('id_jawaban, kd_soal, npm, nama_mahasiswa, jawaban', 'jawaban_mahasiswa', ['kd_soal' => $kd_soal]);
-        $this->hasil_algoritma = $this->essay_model->show_data('kd_jawaban, pre_processing_jawaban, pre_processing_kj, tokenisasi_jawaban, tokenisasi_kj, hashing_jawaban, hashing_kj, winnowing_jawaban, winnowing_kj, similarity, skor', 'hasil_algoritma', ['kd_jawaban' => 18]);
+        $this->jawaban_essay = $this->essay_model->show_data('kd_jawaban, kd_soal, npm, nama_mahasiswa, jawaban', 'jawaban_mahasiswa', ['kd_soal' => $kd_soal]);
+        if(count($this->jawaban_essay) !== 0) {
+            $this->hasil_algoritma = $this->essay_model->show_data('kd_jawaban, pre_processing_jawaban, pre_processing_kj, tokenisasi_jawaban, tokenisasi_kj, hashing_jawaban, hashing_kj, winnowing_jawaban, winnowing_kj, similarity, skor', 'hasil_algoritma', ['kd_jawaban' => $this->jawaban_essay[2]->kd_jawaban]);
+        }
         $this->load->view('template/header');
-        $this->load->view('essay_scoring_view', ['kd_soal' => $kd_soal , 'jawaban' => $this->jawaban_essay, 'soal' => $this->soal_matakuliah,  'hasil' => $this->hasil_algoritma[0]]);
+        $this->load->view('essay_scoring_view', ['kd_soal' => $kd_soal , 'jawaban' => $this->jawaban_essay, 'soal' => $this->soal_matakuliah,  'hasil' => $this->hasil_algoritma]);
         $this->load->view('template/footer');
     }
 }
