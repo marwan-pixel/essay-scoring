@@ -1,7 +1,31 @@
-<a href="<?= base_url('essay/soal_view/' . $this->session->userdata('kd_matkul')); ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
+<a href="<?= base_url('mahasiswa_view/' . $kd_soal); ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
 <h5 class="card-subtitle text-muted">Kode Soal: <?= $kd_soal; ?></h5>
 <table class="table table-bordered mt-3">
     <tbody>
+        <tr>
+            <td>
+                <p class="fw-bold">NPM</p>
+            </td>
+            <td>
+                <p></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p class="fw-bold">Nama Mahasiswa</p>
+            </td>
+            <td>
+                <p></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p class="fw-bold">Kelas</p>
+            </td>
+            <td>
+                <p></p>
+            </td>
+        </tr>
         <tr>
             <td>
                 <p class="fw-bold">Pertanyaan</p>
@@ -29,9 +53,11 @@
     </tbody>
 </table>
 
-<div class="d-grid gap-2 d-md-flex justify-content-md-end">
-    <button class="btn btn-primary my-2" data-bs-toggle="modal" data-bs-target="#tambahDataJawaban"><i class="bi bi-plus-circle me-1"></i> Jawaban</button>
-    <div class="modal fade" id="tambahDataJawaban" tabindex="-1" aria-labelledby="tambahDataJawabanLabel" aria-hidden="true">
+<form>
+    <label class="form-label" for="jawaban">Jawaban Esai</label>
+    <textarea name="" id="jawaban" class="form-control" cols="150" rows="10"></textarea>
+    <button class="btn btn-primary my-2" data-bs-toggle="modal" data-bs-target="#tambahDataJawaban"><i class="bi bi-plus-circle me-1"></i> Simpan Jawaban</button>
+    <!-- <div class="modal fade" id="tambahDataJawaban" tabindex="-1" aria-labelledby="tambahDataJawabanLabel" aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content">
                 <div class="modal-header">
@@ -59,14 +85,13 @@
                             <button type="submit" class="btn btn-primary">Simpan Jawaban</button>
                         </div>
                     </form>
-
                 </div>
             </div>
         </div>
-    </div>
-</div>
+    </div> -->
+</form>
 
-<table class="table">
+<!-- <table class="table">
     <thead>
         <tr>
             <th>No</th>
@@ -89,7 +114,7 @@
                     <td class="col-1"><?= $value->nama_mahasiswa; ?></td>
                     <td class="col-3"><?= $soal[0]->kunci_jawaban; ?></td>
                     <td class="col-4"><?= $value->jawaban; ?></td>
-                    <td><?= ($hasil[0]->skor) / $soal[0]->skor * $soal[0]->bobot;?></td>
+                    <td><?= ($hasil[0]->skor) / $soal[0]->skor * $soal[0]->bobot; ?></td>
                     <td>
                         <div class="d-grid gap-2 col-6 mx-auto">
                             <button class="btn btn-success" data-bs-target="#detailNilai" data-bs-toggle="modal">Detail Nilai</button>
@@ -108,7 +133,9 @@
         <?php }
         ?>
     </tbody>
-</table>
+</table> -->
+
+
 <div class="modal fade" id="detailNilai" tabindex="-1" aria-labelledby="detailNilaiLabel" aria-hidden="true">
     <div class="modal-dialog modal-fullscreen">
         <div class="modal-content">
@@ -124,15 +151,15 @@
                             <h5>Hasil Pre-Processing Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil[0]->pre_processing_kj) ;?></p>
+                                    <p><?= ($hasil[0]->pre_processing_kj); ?></p>
                                 </div>
                             </div>
                             <h5>Hasil Pre-Processing Jawaban</h5>
-                           <div class="card mb-3">
+                            <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?=($hasil[0]->pre_processing_jawaban) ;?></p>
+                                    <p><?= ($hasil[0]->pre_processing_jawaban); ?></p>
                                 </div>
-                           </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -144,15 +171,15 @@
                             <h5>Hasil Tokenisasi Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil[0]->tokenisasi_kj) ;?></p>
+                                    <p><?= ($hasil[0]->tokenisasi_kj); ?></p>
                                 </div>
                             </div>
                             <h5>Hasil Tokenisasi Jawaban</h5>
-                           <div class="card mb-3">
+                            <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?=($hasil[0]->tokenisasi_jawaban) ;?></p>
+                                    <p><?= ($hasil[0]->tokenisasi_jawaban); ?></p>
                                 </div>
-                           </div>
+                            </div>
                         </div>
                     </div>
                 </section>
@@ -164,13 +191,13 @@
                             <h5>Hasil Hashing Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?=($hasil[0]->hashing_kj) ;?></p>
+                                    <p><?= ($hasil[0]->hashing_kj); ?></p>
                                 </div>
                             </div>
                             <h5>Hasil Hashing Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?=($hasil[0]->hashing_jawaban) ;?></p>
+                                    <p><?= ($hasil[0]->hashing_jawaban); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -184,13 +211,13 @@
                             <h5>Hasil Winnowing Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?=($hasil[0]->winnowing_kj) ;?></p>
+                                    <p><?= ($hasil[0]->winnowing_kj); ?></p>
                                 </div>
                             </div>
                             <h5>Hasil Winnowing Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?=($hasil[0]->winnowing_jawaban) ;?></p>
+                                    <p><?= ($hasil[0]->winnowing_jawaban); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -203,7 +230,7 @@
                             <h5>Hasil Cosine Similarity</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?=($hasil[0]->similarity) ;?></p>
+                                    <p><?= ($hasil[0]->similarity); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -216,14 +243,14 @@
                             <h5>Hasil Nilai Perolehan</h5>
                             <h5>Skor Perolehan: <?= ($hasil[0]->skor); ?></h5>
                             <h5>Skor Maksimal: <?= ($soal[0]->skor); ?></h5>
-                            <h5>Bobot: <?= $soal[0]->bobot;?></h5>
+                            <h5>Bobot: <?= $soal[0]->bobot; ?></h5>
 
                             <h5>Nilai Perolehan = Skor Perolehan / Skor Maksimal * Bobot</h5>
 
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    
-                                    <p><?= ($hasil[0]->skor) / $soal[0]->skor * $soal[0]->bobot;?></p>
+
+                                    <p><?= ($hasil[0]->skor) / $soal[0]->skor * $soal[0]->bobot; ?></p>
                                 </div>
                             </div>
                         </div>
