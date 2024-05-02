@@ -105,10 +105,11 @@ class Essay_Controller extends Essay
     {
         $preprocessed_answer = $this->text_preprocessing($jawaban);
         $preprocessed_key_answer = $this->text_preprocessing($kunci_jawaban);
-        $tokenized_answer = $this->tokenization($preprocessed_answer, 2);
-        $tokenized_key_answer = $this->tokenization($preprocessed_key_answer, 2);
-        $hashing_answer = $this->rolling_hash($tokenized_answer, 4);
-        $hashing_key_answer = $this->rolling_hash($tokenized_key_answer, 4);
+        $sinonim_processed_answer = $this->sinonim_checker($preprocessed_answer, $preprocessed_key_answer);
+        $tokenized_answer = $this->tokenization($sinonim_processed_answer, 4);
+        $tokenized_key_answer = $this->tokenization($preprocessed_key_answer, 4);
+        $hashing_answer = $this->rolling_hash($tokenized_answer, 3);
+        $hashing_key_answer = $this->rolling_hash($tokenized_key_answer, 3);
         $winnowing_answer = $this->winnowing($hashing_answer, 3);
         $winnowing_key_answer = $this->winnowing($hashing_key_answer, 3);
         $similarity = $this->cosine_similarity(kunci_jawaban: $winnowing_key_answer, jawaban: $winnowing_answer);
@@ -127,7 +128,7 @@ class Essay_Controller extends Essay
         }
         $final_score = ($score / $max_score) * $bobot;
         return array(
-            'pre_processing_jawaban' => json_encode($preprocessed_answer),
+            'pre_processing_jawaban' => json_encode($sinonim_processed_answer),
             'pre_processing_kj' => json_encode($preprocessed_key_answer),
             'tokenisasi_jawaban' => json_encode($tokenized_answer),
             'tokenisasi_kj' => json_encode($tokenized_key_answer),
@@ -139,15 +140,43 @@ class Essay_Controller extends Essay
             'skor' => $score,
             'skor_akhir' => $final_score
         );
-        // return $preprocessed_answer;
     }
 
-    private function text_preprocessing(string $kalimat)
+    private function text_preprocessing(string $kalimat): string
     {
-        $case_folding_kalimat = preg_replace('/[^\p{L}\s\s+]/u', "", strtolower($kalimat));
-        // return $case_folding_kalimat;
+        $case_folding_kalimat = preg_replace('/[^\p{L}\s\s+]/u', "", strtolower(strip_tags($kalimat)));
         exec('python ' . APPPATH . 'controllers/python/essay.py ' . escapeshellarg($case_folding_kalimat), $output);
         return ($output[0]);
+    }
+
+    private function get_sinonim(string $keyword_jawaban, string $keyword_kunci_jawaban)
+    {
+        $dict_json = file_get_contents(APPPATH . 'controllers/dict.json');
+        $dict_data = json_decode($dict_json);
+        $array_kunci_jawaban = explode(" ", $keyword_kunci_jawaban);
+        if (property_exists($dict_data, $keyword_jawaban)) {
+            for ($i = 0; $i < count($dict_data->$keyword_jawaban->sinonim); $i++) {
+                if (in_array($dict_data->$keyword_jawaban->sinonim[$i], $array_kunci_jawaban)) {
+                    return $dict_data->$keyword_jawaban->sinonim[$i];
+                }
+            }
+        } else {
+            return null;
+        }
+    }
+    private function sinonim_checker(string $jawaban, string $kunci_jawaban)
+    {
+        $array_jawaban = explode(" ", $jawaban);
+        $results = [];
+        for ($i = 0; $i < count($array_jawaban); $i++) {
+            $sinonim_keyword = $this->get_sinonim($array_jawaban[$i], $kunci_jawaban);
+            if (is_null($sinonim_keyword)) {
+                array_push($results, $array_jawaban[$i]);
+            } else {
+                array_push($results, $sinonim_keyword);
+            }
+        }
+        return implode(" ", $results);
     }
 
     private function tokenization(string $kalimat, int $n): array

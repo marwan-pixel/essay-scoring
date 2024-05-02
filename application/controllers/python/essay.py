@@ -13,6 +13,7 @@ def stemming(jawaban):
     stemmer = factory.create_stemmer()
     return stemmer.stem(jawaban)
 
+
 # def load(filename):
 #     with open(filename) as datafile:
 #         data = json.load(datafile)
@@ -33,7 +34,7 @@ def stemming(jawaban):
 #             hasil.append(i)
 #         else:
 #             hasil.append(a)
-#     return stemming(hasil)
+#     return (stemmer.stem_kalimat(hasil))
 
 if len(sys.argv[1]) > 1:
     sentence = tokenize(sys.argv[1])
