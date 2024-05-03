@@ -5,7 +5,7 @@
             <script src="https://cloud.tinymce.com/6/tinymce.min.js?apiKey=9cl8gc3sx2al2tw7ahl0r5ge3r9g1zqc048rk4d5r8uashjv"></script>
             <script>
                 tinymce.init({
-                    selector: "#textarea_essay",
+                    selector: "textarea",
                     plugins: "advcode advlist anchor autosave autolink casechange charmap checklist codesample directionality editimage export help image insertdatetime link linkchecker lists media mediaembed nonbreaking pagebreak permanentpen powerpaste save searchreplace table tableofcontents visualblocks visualchars",
                     toolbar: "undo redo | blocks fontfamily fontsize | bold italic underline forecolor backcolor | link image | alignleft aligncenter alignright alignjustify lineheight | bullist numlist indent outdent | removeformat",
                     height: "500px",

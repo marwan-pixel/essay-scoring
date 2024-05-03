@@ -61,7 +61,7 @@
     <input hidden type="number" name="input_skor" value="<?= $soal[0]->skor; ?>">
     <input hidden type="number" name="input_bobot" value="<?= $soal[0]->bobot; ?>">
     <input hidden type="text" name="input_kd_jawaban" value="<?= $jawaban[0]->kd_jawaban ?? ''; ?>">
-    <textarea hidden name="input_kunci_jawaban" cols="30" rows="10"><?= $soal[0]->kunci_jawaban; ?></textarea>
+    <input hidden type="text" name="input_kunci_jawaban" value="<?= $soal[0]->kunci_jawaban; ?>"></input>
     <label class="form-label" for="textarea_essay">Jawaban Esai</label>
     <textarea name="input_jawaban" id="textarea_essay" class="form-control mb-3" cols="50" rows="10"><?= $jawaban[0]->jawaban ?? ''; ?>
     </textarea>
