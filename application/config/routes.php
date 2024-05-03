@@ -1,5 +1,5 @@
 <?php
-defined('BASEPATH') OR exit('No direct script access allowed');
+defined('BASEPATH') or exit('No direct script access allowed');
 
 /*
 | -------------------------------------------------------------------------
@@ -52,8 +52,11 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 $route['default_controller'] = 'essay';
 $route['404_override'] = '';
 $route['soal_view/(:any)'] = 'essay/soal_view/$1';
-$route['essay_scoring_view/(:any)'] = 'essay/essay_scoring_view/$1';
+$route['essay_scoring_view/(:any)/(:any)'] = 'essay/essay_scoring_view/$1/$2';
+$route['mahasiswa_view/(:any)'] = 'essay/mahasiswa_view/$1';
 $route['input_matkul'] = 'essay_controller/add_data_matkul';
 $route['input_soal'] = 'essay_controller/add_data_soal';
 $route['input_jawaban'] = 'essay_controller/add_jawaban_mhs';
+$route['update_jawaban/(:any)/(:any)'] = 'essay_controller/update_jawaban_mhs/$1/$2';
+$route['input_mhs'] = 'essay_controller/add_data_mhs';
 $route['translate_uri_dashes'] = FALSE;
