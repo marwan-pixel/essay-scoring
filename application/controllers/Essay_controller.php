@@ -56,52 +56,52 @@ class Essay_Controller extends Essay
 
     public function add_jawaban_mhs()
     {
-        if ($this->input->method() === 'post') {
-            $this->jawaban_essay = array(
-                'kd_jawaban' =>  $this->session->userdata('kd_soal') . rand(0, 10),
-                'kd_soal' => $this->session->userdata('kd_soal'),
-                'npm' => $this->input->post('input_npm'),
-                'nama_mahasiswa' => $this->input->post('input_mahasiswa'),
-                'jawaban' => $this->input->post('input_jawaban'),
-            );
-            $remove_breakline_jawaban = str_replace(PHP_EOL, ' ', $this->jawaban_essay['jawaban']);
-            $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('input_kunci_jawaban'));
-            $final_score = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: $this->input->post('input_skor'), bobot: $this->input->post('input_bobot'));
-            $final_score['kd_jawaban'] = $this->jawaban_essay['kd_jawaban'];
-            // var_dump($final_score);
-            $jawaban_saved = $this->essay_model->add_data(table: 'jawaban_mahasiswa', data: $this->jawaban_essay);
+        // if ($this->input->method() === 'post') {
+        //     $this->jawaban_essay = array(
+        //         'kd_jawaban' =>  $this->session->userdata('kd_soal') . rand(0, 10),
+        //         'kd_soal' => $this->session->userdata('kd_soal'),
+        //         'npm' => $this->input->post('input_npm'),
+        //         'nama_mahasiswa' => $this->input->post('input_mahasiswa'),
+        //         'jawaban' => $this->input->post('input_jawaban'),
+        //     );
+        //     $remove_breakline_jawaban = str_replace(PHP_EOL, ' ', $this->jawaban_essay['jawaban']);
+        //     $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('input_kunci_jawaban'));
+        //     $final_score = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: $this->input->post('input_skor'), bobot: $this->input->post('input_bobot'));
+        //     $final_score['kd_jawaban'] = $this->jawaban_essay['kd_jawaban'];
+        //     // var_dump($final_score);
+        //     $jawaban_saved = $this->essay_model->add_data(table: 'jawaban_mahasiswa', data: $this->jawaban_essay);
 
-            unset($final_score['skor_akhir']);
-            $hasil_jawaban_saved = $this->essay_model->add_data(table: 'hasil_algoritma', data: $final_score);
-            if ($jawaban_saved && $hasil_jawaban_saved) {
-                redirect(base_url('essay_scoring_view/' . $this->session->userdata('kd_soal') . '/' . $this->jawaban_essay['npm']));
-            }
-        }
+        //     unset($final_score['skor_akhir']);
+        //     $hasil_jawaban_saved = $this->essay_model->add_data(table: 'hasil_algoritma', data: $final_score);
+        //     if ($jawaban_saved && $hasil_jawaban_saved) {
+        //         redirect(base_url('essay_scoring_view/' . $this->session->userdata('kd_soal') . '/' . $this->jawaban_essay['npm']));
+        //     }
+        // }
     }
 
-    public function update_jawaban_mhs($npm, $kd_jawaban)
+    public function update_jawaban_mhs($kd_soal, $npm)
     {
         if ($this->input->method() === 'post') {
             $this->jawaban_essay = array(
-                'kd_jawaban' =>  $this->input->post('input_kd_jawaban'),
-                'jawaban' => $this->input->post('input_jawaban'),
+                'jawaban' => $this->input->post('jawaban_mahasiswa'),
             );
             $remove_breakline_jawaban = str_replace(PHP_EOL, ' ', $this->jawaban_essay['jawaban']);
-            $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('input_kunci_jawaban'));
-            $final_score = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: $this->input->post('input_skor'), bobot: $this->input->post('input_bobot'));
-            $final_score['kd_jawaban'] = $this->jawaban_essay['kd_jawaban'];
+            $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
+            $final_score = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: $this->input->post('skor'), bobot: $this->input->post('bobot'));
+            $this->jawaban_essay['hasil_nilai'] = $final_score['skor_akhir'];
             // var_dump($final_score);
-            $jawaban_saved = $this->essay_model->update_data(table: 'jawaban_mahasiswa', data: $this->jawaban_essay, param: ['kd_jawaban' => $kd_jawaban, 'npm' => $npm]);
+            $jawaban_saved = $this->essay_model->update_data(table: 'cbt_jawaban', data: $this->jawaban_essay, param: ['kd_soal' => $kd_soal, 'npm' => $npm]);
 
             unset($final_score['skor_akhir']);
-            $hasil_jawaban_saved = $this->essay_model->update_data(table: 'hasil_algoritma', data: $final_score, param: ['kd_jawaban' => $kd_jawaban]);
-            if ($jawaban_saved && $hasil_jawaban_saved) {
+            // $hasil_jawaban_saved = $this->essay_model->update_data(table: 'hasil_algoritma', data: $final_score, param: ['kd_jawaban' => $kd_jawaban]);
+            if ($jawaban_saved) {
+                $this->session->set_userdata($final_score);
                 redirect(base_url('essay_scoring_view/' . $this->session->userdata('kd_soal') . '/' . $npm));
             }
         }
     }
 
-    private function essay_scoring(string $jawaban, string $kunci_jawaban, int $max_score, int $bobot)
+    public function essay_scoring(string $jawaban, string $kunci_jawaban, int $max_score, int $bobot)
     {
         $preprocessed_answer = $this->text_preprocessing($jawaban);
         $preprocessed_key_answer = $this->text_preprocessing($kunci_jawaban);
@@ -137,7 +137,7 @@ class Essay_Controller extends Essay
             'winnowing_jawaban' => json_encode($winnowing_answer),
             'winnowing_kj' => json_encode($winnowing_key_answer),
             'similarity' => $similarity,
-            'skor' => $score,
+            'hasil_nilai' => $score,
             'skor_akhir' => $final_score
         );
     }
