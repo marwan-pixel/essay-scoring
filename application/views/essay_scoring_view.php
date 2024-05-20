@@ -1,4 +1,4 @@
-<a href="<?= base_url('mahasiswa_view/' . $kd_soal); ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
+<a href="<?= base_url('jawaban_mahasiswa_view/' . $kd_soal); ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
 <h5 class="card-subtitle text-muted">Kode Soal: <?= $kd_soal; ?></h5>
 <table class="table table-bordered mt-3">
     <tbody>
@@ -7,15 +7,7 @@
                 <p class="fw-bold">NPM</p>
             </td>
             <td>
-                <p><?= $mahasiswa[0]->npm; ?></p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p class="fw-bold">Nama Mahasiswa</p>
-            </td>
-            <td>
-                <p><?= $mahasiswa[0]->nama_mahasiswa; ?></p>
+                <p><?= $jawaban[0]->npm; ?></p>
             </td>
         </tr>
         <tr>
@@ -23,7 +15,15 @@
                 <p class="fw-bold">Kelas</p>
             </td>
             <td>
-                <p><?= $mahasiswa[0]->kelas; ?></p>
+                <p><?= $jawaban[0]->kd_kelas; ?></p>
+            </td>
+        </tr>
+        <tr>
+            <td>
+                <p class="fw-bold">Program Studi</p>
+            </td>
+            <td>
+                <p><?= $jawaban[0]->kd_progstudi; ?></p>
             </td>
         </tr>
         <tr>
@@ -34,37 +34,22 @@
                 <p><?= $soal[0]->soal; ?></p>
             </td>
         </tr>
-        <tr>
-            <td>
-                <p class="fw-bold">Skor</p>
-            </td>
-            <td>
-                <p><?= $soal[0]->skor; ?></p>
-            </td>
-        </tr>
-        <tr>
-            <td>
-                <p class="fw-bold">Bobot</p>
-            </td>
-            <td>
-                <p><?= $soal[0]->bobot; ?></p>
-            </td>
-        </tr>
     </tbody>
 </table>
 
-<form action="<?= count($jawaban) === 0 ? base_url('input_jawaban') : base_url('update_jawaban') . '/' . $mahasiswa[0]->npm . '/' .  $jawaban[0]->kd_jawaban; ?>" method="post">
-    <input hidden type="text" name="input_npm" value="<?= $mahasiswa[0]->npm; ?>">
-    <input hidden type="text" name="input_mahasiswa" value="<?= $mahasiswa[0]->nama_mahasiswa; ?>">
-    <input hidden type="text" name="input_mahasiswa" value="<?= $mahasiswa[0]->nama_mahasiswa; ?>">
-    <input hidden type="text" name="kd_soal" value="<?= $kd_soal; ?>">
-    <input hidden type="number" name="input_skor" value="<?= $soal[0]->skor; ?>">
-    <input hidden type="number" name="input_bobot" value="<?= $soal[0]->bobot; ?>">
-    <input hidden type="text" name="input_kd_jawaban" value="<?= $jawaban[0]->kd_jawaban ?? ''; ?>">
-    <input hidden type="text" name="input_kunci_jawaban" value="<?= $soal[0]->kunci_jawaban; ?>"></input>
+<form action="<?= count($jawaban) === 0 ? base_url('input_jawaban') : base_url('update_jawaban') . '/' . $kd_soal . '/' . $jawaban[0]->npm;  ?>" method="post">
     <label class="form-label" for="textarea_essay">Jawaban Esai</label>
-    <textarea name="input_jawaban" id="textarea_essay" class="form-control mb-3" cols="50" rows="10"><?= $jawaban[0]->jawaban ?? ''; ?>
-    </textarea>
+    <!-- <textarea readonly name="input_jawaban" id="textarea_essay" class="form-control mb-3" cols="50" rows="10">
+    </textarea> -->
+    <input type="number" name="bobot" hidden value="8">
+    <input type="number" name="skor" hidden value="6">
+    <input type="text" name="jawaban_mahasiswa" hidden value="<?= $jawaban[0]->jawaban ?? ''; ?>">
+    <input type="text" name="kunci_jawaban" hidden value="<?= $soal[0]->kunci_jawaban ?? ''; ?>" id="">
+    <div class="card">
+        <div class="card-body">
+            <?= $jawaban[0]->jawaban ?? ''; ?>
+        </div>
+    </div>
     <?php
     if (count($jawaban) > 0) {
     ?>
@@ -73,7 +58,7 @@
                 <div class="card-body">
                     <div class="card-title">
                         <h5>Skor Perolehan</h5>
-                        <h1><?= ($hasil[0]->skor) / $soal[0]->skor * $soal[0]->bobot; ?></h1>
+                        <h1><?= $jawaban[0]->hasil_nilai ?? 0; ?></h1>
                     </div>
                 </div>
             </div>
@@ -81,15 +66,14 @@
                 <div class="card-body">
                     <div class="card-title">
                         <h5>Tingkat Kemiripan (<i>Similarity</i>)</h5>
-                        <h1><?= number_format((float)$hasil[0]->similarity, 3, '.', ''); ?></h1>
+                        <h1><?= $this->session->userdata('similarity'); ?></h1>
                     </div>
                 </div>
             </div>
-
         </div>
         <div class="d-grid gap-2 d-md-flex justify-content-md-end">
-            <button class="btn btn-primary my-2" type="submit" id="updateJawabanButton"> <i class="bi bi-save"></i> Ubah Jawaban</button>
-            <button class="btn btn-success my-2" type="button" data-bs-toggle="modal" data-bs-target="#detailNilai"><i class="bi bi-search"></i> Detail Jawaban</button>
+            <button class="btn btn-primary my-2" type="submit" id="updateJawabanButton"> <i class="bi bi-save me-1"></i> Update Nilai</button>
+            <button class="btn btn-success my-2" data-bs-toggle="modal" data-bs-target="#detailNilai" type="button"><i class="bi bi-search"></i> Detail Jawaban</button>
         <?php
     } else {
         ?>
@@ -118,13 +102,13 @@
                             <h5>Jawaban Mahasiswa</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= $jawaban[0]->jawaban; ?></p>
+                                    <p><?= $jawaban[0]->jawaban ?? ''; ?></p>
                                 </div>
                             </div>
                             <h5>Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= $soal[0]->kunci_jawaban; ?></p>
+                                    <p><?= $soal[0]->kunci_jawaban ?? ''; ?></p>
                                 </div>
                             </div>
                         </div>
@@ -137,13 +121,13 @@
                             <h5>Hasil Pre-Processing Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= $hasil[0]->pre_processing_kj; ?></p>
+                                    <p><?= $this->session->userdata('pre_processing_kj'); ?></p>
                                 </div>
                             </div>
                             <h5>Hasil Pre-Processing Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil[0]->pre_processing_jawaban); ?></p>
+                                    <p><?= $this->session->userdata('pre_processing_jawaban'); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -157,13 +141,13 @@
                             <h5>Hasil Tokenisasi Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil[0]->tokenisasi_kj); ?></p>
+                                    <p><?= $this->session->userdata('tokenisasi_kj'); ?></p>
                                 </div>
                             </div>
                             <h5>Hasil Tokenisasi Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil[0]->tokenisasi_jawaban); ?></p>
+                                    <p><?= $this->session->userdata('tokenisasi_jawaban'); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -177,13 +161,13 @@
                             <h5>Hasil Hashing Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil[0]->hashing_kj); ?></p>
+                                    <p><?= $this->session->userdata('hashing_kj'); ?></p>
                                 </div>
                             </div>
                             <h5>Hasil Hashing Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil[0]->hashing_jawaban); ?></p>
+                                    <p><?= $this->session->userdata('hashing_jawaban'); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -197,13 +181,13 @@
                             <h5>Hasil Winnowing Kunci Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil[0]->winnowing_kj); ?></p>
+                                    <p><?= $this->session->userdata('winnowing_kj'); ?></p>
                                 </div>
                             </div>
                             <h5>Hasil Winnowing Jawaban</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil[0]->winnowing_jawaban); ?></p>
+                                    <p><?= $this->session->userdata('winnowing_jawaban'); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -216,7 +200,7 @@
                             <h5>Hasil Cosine Similarity</h5>
                             <div class="card mb-3">
                                 <div class="card-body">
-                                    <p><?= ($hasil[0]->similarity); ?></p>
+                                    <p><?= $this->session->userdata('similarity'); ?></p>
                                 </div>
                             </div>
                         </div>
@@ -227,16 +211,16 @@
                     <div class="card">
                         <div class="card-body">
                             <h5>Hasil Nilai Perolehan</h5>
-                            <h5>Skor Perolehan: <?= ($hasil[0]->skor); ?></h5>
-                            <h5>Skor Maksimal: <?= ($soal[0]->skor); ?></h5>
-                            <h5>Bobot: <?= $soal[0]->bobot; ?></h5>
+                            <h5>Skor Perolehan: <?= $this->session->userdata('hasil_nilai'); ?></h5>
+                            <h5>Skor Maksimal: <?= 6; ?></h5>
+                            <h5>Bobot: </h5>
 
                             <h5>Nilai Perolehan = Skor Perolehan / Skor Maksimal * Bobot</h5>
 
                             <div class="card mb-3">
                                 <div class="card-body">
 
-                                    <p><?= ($hasil[0]->skor) / $soal[0]->skor * $soal[0]->bobot; ?></p>
+                                    <p></p>
                                 </div>
                             </div>
                         </div>
