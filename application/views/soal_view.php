@@ -1,63 +1,34 @@
-<a href="<?= base_url('/') ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
-<h5 class="card-subtitle text-muted">Soal Esai: <?= $title; ?></h5>
-<form class="row mt-3" action="<?= base_url('soal_view/' . $title); ?>" method="post">
-  <div class="col-md-2">
-    <select class="form-select" name="semester" aria-label="Default select example">
-      <option selected>Semester</option>
-      <?php
-      foreach ($semester as $key => $value) {
-      ?>
-        <option value="<?= $value->semester; ?>"><?= $value->semester; ?></option>
-      <?php
-      }
-      ?>
-
-    </select>
-  </div>
+<!-- <a href="<?
+              // echo base_url('/') 
+              ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
+<h5 class="card-subtitle text-muted">Soal Esai: <?
+                                                // echo $title; 
+                                                ?></h5>
+<form class="row mt-3" action="<?
+                                // echo base_url('soal_view/' . $title); 
+                                ?>" method="post">
   <div class="col-md-2">
     <select class="form-select" name="thn_akademik" aria-label="Default select example">
       <option selected>Tahun Akademik</option>
       <?php
-      foreach ($thn_akademik as $key => $value) {
+      // foreach ($thn_akademik as $key => $value) {
       ?>
-        <option value="<?= $value->thn_akademik; ?>"><?= $value->thn_akademik; ?></option>
+        <option value="<?
+                        // echo $value->thn_akademik; 
+                        ?>"><?
+                            // echo $value->thn_akademik; 
+                            ?></option>
       <?php
-      }
+      // }
       ?>
     </select>
   </div>
-  <div class="col-md-2">
-    <select class="form-select" name="kelas" aria-label="Default select example">
-      <option selected>Kelas</option>
-      <?php
-      foreach ($kelas as $key => $value) {
-      ?>
-        <option value="<?= $value->kd_kelas; ?>"><?= $value->kd_kelas; ?></option>
-      <?php
-      }
-      ?>
-    </select>
-  </div>
-  <div class="col-md-2">
-    <select class="form-select" name="ctype" aria-label="Default select example">
-      <option selected>Jenis Ujian</option>
-      <?php
-      foreach ($ctype as $key => $value) {
-      ?>
-        <option value="<?= $value->ctype; ?>"><?= $value->ctype == 3 ? "UTS" : "UAS"; ?></option>
-      <?php
-      }
-      ?>
-    </select>
-  </div>
+
   <div class="col-md-2">
     <input name="submit" type="submit" class="btn btn-primary">
   </div>
 </form>
 
-<!-- <button type="button" class="btn btn-primary mt-3" data-bs-toggle="modal" data-bs-target="#tambahSoalEsai"><i class="bi bi-plus-circle me-1"></i> Soal</button> -->
-
-<!-- Modal -->
 <div class="modal fade" id="tambahSoalEsai" data-bs-backdrop="static" tabindex="-1" aria-labelledby="tambahSoalEsaiLabel" aria-hidden="true">
   <div class="modal-dialog modal-xl">
     <div class="modal-content">
@@ -66,7 +37,9 @@
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
       <div class="modal-body">
-        <form action="<?= base_url('input_soal') ?>" method="post">
+        <form action="<?
+                      // echo base_url('input_soal')
+                      ?>" method="post">
           <div class="mb-3">
             <label for="input_soal" class="form-label">Soal</label>
             <textarea name="input_soal" required class="form-control" id="input_soal" cols="20" rows="5" aria-describedby="soalHelp"></textarea>
@@ -123,16 +96,18 @@
       </div>
     </div>
   </div>
-</div>
+</div> -->
 
 <?= count($soal_matkul) !== 0 && count($soal_matkul) > 12 ? $this->pagination->create_links() : ''; ?>
 <table class="table mt-2">
   <thead>
     <tr>
       <th>No</th>
-      <th>Soal</th>
-      <th>Kunci Jawaban</th>
-      <th>Aksi</th>
+      <th>Semester</th>
+      <th>Kelas</th>
+      <th>Mata Kuliah</th>
+      <th>UTS</th>
+      <th>UAS</th>
     </tr>
   </thead>
   <tbody class="table-group-divider">
@@ -146,7 +121,6 @@
           <td class="col-5"><?= $value->kunci_jawaban ?? ''; ?></td>
           <td>
             <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-              <!-- <a href="javascript:;" kd-soal="<?= $value->kd_soal; ?>" data-soal="<?= $value->soal; ?>" data-kunci-jawaban="<?= $value->kunci_jawaban; ?>" class="btn btn-primary d-flex align-items-center" data-bs-toggle="modal" data-bs-target="#ubahSoalEsai">Ubah</a> -->
               <a href="<?= base_url('jawaban_mahasiswa_view/' . $value->kd_soal); ?>" class="btn btn-success ">Jawaban Mahasiswa</a>
             </div>
           </td>

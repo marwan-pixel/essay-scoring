@@ -19,6 +19,58 @@ class Essay_Controller extends Essay
         }
     }
 
+    public function loginService()
+    {
+        $loginData = array(
+            'nip' => $this->input->post('nip'),
+            'password' => $this->input->post('password')
+        );
+
+        $dataValidation = array(
+            array(
+                'field' => 'nip',
+                'label' => 'NIP',
+                'rules' => 'required|trim',
+                'error' =>
+                [
+                    'required' => 'NIP wajib diisi!'
+                ]
+            ),
+            array(
+                'field' => 'password',
+                'label' => 'Password',
+                'rules' => 'required|trim',
+                'error' =>
+                [
+                    'required' => 'Password wajib diisi!'
+                ]
+            ),
+        );
+        $this->form_validation->set_rules($dataValidation);
+        if ($this->form_validation->run() === true) {
+            $getData = $this->essay_model->get_data_login(column: "nip", table: "cbt_soal", param: ['nip' => $loginData['nip']]);
+
+            if (count($getData) > 0) {
+                if ($loginData['nip'] !== $loginData['password']) {
+                    $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+                    Password tidak sama!
+                    </div>');
+                    $this->login();
+                } else {
+                    $this->session->set_userdata(['nip' => $getData['nip']]);
+                    redirect('/');
+                }
+            } else {
+                $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+                    NIP Tidak terdaftar!
+                    </div>');
+                $this->login();
+            }
+        } else {
+            $this->login();
+        }
+    }
+
     public function add_data_soal()
     {
         if ($this->input->method() === 'post') {
@@ -35,22 +87,6 @@ class Essay_Controller extends Essay
             if ($soal_saved) {
                 redirect(base_url('soal_view/' . $this->session->userdata('kd_matkul')));
             }
-        }
-    }
-
-    public function add_data_mhs()
-    {
-        if ($this->input->method() === 'post') {
-            $this->data_mahasiswa = array(
-                'npm' => $this->input->post('input_npm'),
-                'nama_mahasiswa' => $this->input->post('input_nama'),
-                'kelas' => $this->input->post('input_kelas'),
-                'program_studi' => $this->input->post('input_prodi')
-            );
-        }
-        $soal_saved = $this->essay_model->add_data(table: 'mahasiswa', data: $this->data_mahasiswa);
-        if ($soal_saved) {
-            redirect(base_url('mahasiswa_view/' . $this->session->userdata('kd_soal')));
         }
     }
 

@@ -51,6 +51,8 @@ defined('BASEPATH') or exit('No direct script access allowed');
 */
 $route['default_controller'] = 'essay';
 $route['404_override'] = '';
+$route['login'] = 'essay/login';
+$route['loginService'] = 'essay_controller/loginService';
 $route['soal_view/(:any)'] = 'essay/soal_view/$1';
 $route['essay_scoring_view/(:any)/(:any)'] = 'essay/essay_scoring_view/$1/$2';
 $route['jawaban_mahasiswa_view/(:any)'] = 'essay/jawaban_mahasiswa_view/$1';
