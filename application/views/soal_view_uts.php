@@ -103,11 +103,8 @@
   <thead>
     <tr>
       <th>No</th>
-      <th>Semester</th>
-      <th>Kelas</th>
-      <th>Mata Kuliah</th>
-      <th>UTS</th>
-      <th>UAS</th>
+      <th>Soal</th>
+      <th>Kunci Jawaban</th>
     </tr>
   </thead>
   <tbody class="table-group-divider">
@@ -119,11 +116,6 @@
           <td><?= $key + 1; ?></td>
           <td class="col-5"><?= $value->soal ?? ''; ?></td>
           <td class="col-5"><?= $value->kunci_jawaban ?? ''; ?></td>
-          <td>
-            <div class="d-grid gap-2 d-md-flex justify-content-md-between">
-              <a href="<?= base_url('jawaban_mahasiswa_view/' . $value->kd_soal); ?>" class="btn btn-success ">Jawaban Mahasiswa</a>
-            </div>
-          </td>
         </tr>
       <?php
 

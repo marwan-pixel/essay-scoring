@@ -189,12 +189,12 @@
                         <th><?= $value->kd_kelas ?></th>
                         <th><?= $value->kd_matkul ?></th>
                         <th>
-                            <a href="<?= base_url('soal_view/' . $value->kd_matkul); ?>" class="btn btn-outline-primary">Input Soal</a>
+                            <a href="<?= base_url('soal_view_uts/' . $value->kd_matkul); ?>" class="btn btn-outline-primary">Input Soal</a>
                             <a href="<?= base_url('jawaban_mahasiswa_view/' . $value->kd_matkul); ?>" class="btn btn-outline-primary">Jawaban Soal</a>
                         </th>
                         <th>
-                            <a href="<?= base_url('soal_view'); ?>" class="btn btn-outline-primary">Input Soal</a>
-                            <a href="<?= base_url('jawaban_mahasiswa_view'); ?> " class="btn btn-outline-primary">Jawaban Soal</a>
+                            <a href="<?= base_url('soal_view_uas/') . $value->kd_matkul; ?>" class="btn btn-outline-primary">Input Soal</a>
+                            <a href="<?= base_url('jawaban_mahasiswa_view/' . $value->kd_matkul); ?> " class="btn btn-outline-primary">Jawaban Soal</a>
                         </th>
                     </tr>
                 <?php

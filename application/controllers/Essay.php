@@ -77,43 +77,50 @@ class Essay extends CI_Controller
     }
 
 
-    public function soal_view($kd_matkul)
+    public function soal_view_uts($kd_matkul)
     {
         $this->session->set_userdata('kd_matkul', $kd_matkul);
         $initialize = $this->paginationInitialize('soal_view/' . $kd_matkul, 'kd_soal', 'cbt_soal');
 
-        if ($this->input->post('submit')) {
-            $thn_akademik = $this->input->post('thn_akademik');
-            $this->session->set_userdata(array(
-                'thn_akademik' => $thn_akademik,
-
-            ));
-        } else {
-            $thn_akademik = $this->session->userdata('thn_akademik');
-        }
-
-        $data_thn_akademik  = $this->essay_model->show_data(
-            column: 'thn_akademik',
-            table: 'cbt_soal',
-        );
-
-        $initialize['total_rows'] = $this->db->select('kd_soal, soal, kunci_jawaban, semester, thn_akademik')->where([
+        $initialize['total_rows'] = $this->db->select('kd_soal, soal, kunci_jawaban')->where([
             'kd_matkul' => $kd_matkul,
-            'thn_akademik' => $thn_akademik,
         ])->from('cbt_soal')->count_all_results();
         $this->pagination->initialize($initialize);
         $start = $_GET['per_page'] ?? null;
         $this->soal_matakuliah = $this->essay_model->show_data(
-            column: 'kd_soal, soal, kunci_jawaban, semester, thn_akademik',
+            column: 'kd_soal, soal, kunci_jawaban',
             table: 'cbt_soal',
-            param: ['kd_matkul' => $kd_matkul,  'thn_akademik' => $thn_akademik],
+            param: ['kd_matkul' => $kd_matkul, 'ctype' => 3, 'thn_akademik' => $this->session->userdata('thn_akademik')],
             limit: $initialize['per_page'],
             offset: $start
         );
         $this->load->view('template/header');
-        $this->load->view('soal_view', [
+        $this->load->view('soal_view_uts', [
             'kd_matkul' => $kd_matkul, 'title' => $kd_matkul, 'soal_matkul' => $this->soal_matakuliah,
-            'thn_akademik' => $data_thn_akademik,
+        ]);
+        $this->load->view('template/footer');
+    }
+
+    public function soal_view_uas($kd_matkul)
+    {
+        $this->session->set_userdata('kd_matkul', $kd_matkul);
+        $initialize = $this->paginationInitialize('soal_view/' . $kd_matkul, 'kd_soal', 'cbt_soal');
+
+        $initialize['total_rows'] = $this->db->select('kd_soal, soal, kunci_jawaban')->where([
+            'kd_matkul' => $kd_matkul,
+        ])->from('cbt_soal')->count_all_results();
+        $this->pagination->initialize($initialize);
+        $start = $_GET['per_page'] ?? null;
+        $this->soal_matakuliah = $this->essay_model->show_data(
+            column: 'kd_soal, soal, kunci_jawaban',
+            table: 'cbt_soal',
+            param: ['kd_matkul' => $kd_matkul, 'ctype' => 4, 'thn_akademik' => $this->session->userdata('thn_akademik')],
+            limit: $initialize['per_page'],
+            offset: $start
+        );
+        $this->load->view('template/header');
+        $this->load->view('soal_view_uas', [
+            'kd_matkul' => $kd_matkul, 'title' => $kd_matkul, 'soal_matkul' => $this->soal_matakuliah,
         ]);
         $this->load->view('template/footer');
     }
