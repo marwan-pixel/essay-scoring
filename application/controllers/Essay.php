@@ -202,15 +202,7 @@ class Essay extends CI_Controller
             'ctype' => $ctype,
             'aktif' => 1
         ];
-        $this->soal_matakuliah = $this->essay_model->show_data('soal, kd_soal', 'cbt_soal', $get_soal_matakuliah);
-        // $get_jawaban_mahasiswa = [
-        //     'kd_matkul' => $kd_matkul,
-        //     'thn_akademik' => $this->session->userdata('thn_akademik'),
-        //     'semester' => $semester,
-        //     'kd_kelas' => $kd_kelas,
-        //     'npm' => $this->session->userdata('npm')
-        // ];
-        // $jawaban_mahasiswa = $this->essay_model->show_data('jawaban', 'cbt_jawaban', $get_jawaban_mahasiswa);
+        $this->soal_matakuliah = $this->essay_model->show_data('soal, kd_soal, kunci_jawaban, bobot_soal, ctype', 'cbt_soal', $get_soal_matakuliah);
         $this->data_mahasiswa = $this->db->select('cbt_jawaban.jawaban, cbt_soal.soal, cbt_soal.kd_soal')
             ->from('cbt_jawaban')
             ->join('cbt_soal', 'cbt_jawaban.kd_soal = cbt_soal.kd_soal')
@@ -222,11 +214,15 @@ class Essay extends CI_Controller
                 'cbt_soal.thn_akademik' => $this->session->userdata('thn_akademik'),
                 'cbt_jawaban.npm' => $this->session->userdata('npm')
             ])->order_by('cbt_soal.kd_soal', 'ASC')->get()->result();
-        // var_dump($this->soal_matakuliah);
-        // var_dump($this->data_mahasiswa);
-        // die();
+
         $this->load->view('template/header');
-        $this->load->view('essay_scoring_view_detail', ['title' => "Esai", 'soal_matakuliah' => $this->soal_matakuliah, 'kd_matkul' => $kd_matkul, 'jawaban_mahasiswa' => $this->data_mahasiswa]);
+        $this->load->view('essay_scoring_view_detail', [
+            'title' => "Esai", 'soal_matakuliah' => $this->soal_matakuliah,
+            'kd_matkul' => $kd_matkul,
+            'kd_kelas' => $kd_kelas,
+            'semester' => $semester,
+            'jawaban_mahasiswa' => $this->data_mahasiswa
+        ]);
         $this->load->view('template/footer');
     }
 }
