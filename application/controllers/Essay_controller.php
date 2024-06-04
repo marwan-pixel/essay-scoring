@@ -145,7 +145,7 @@ class Essay_Controller extends Essay
     private function text_preprocessing(string $kalimat): string
     {
         $case_folding_kalimat = preg_replace('/[^\p{L}\s\s+]/u', "", strtolower(strip_tags($kalimat)));
-        exec('python ' . APPPATH . 'controllers/python/essay.py ' . escapeshellarg($case_folding_kalimat), $output);
+        exec('py ' . APPPATH . 'controllers/python/essay.py ' . escapeshellarg($case_folding_kalimat), $output);
         return ($output[0]);
     }
 
