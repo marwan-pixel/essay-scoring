@@ -33,7 +33,7 @@ class Essay_Controller extends Essay
         );
         $this->form_validation->set_rules($dataValidation);
         if ($this->form_validation->run() === true) {
-            $getData = (is_numeric($loginData["id"]) ? $this->essay_model->get_data_login(column: "npm, kd_kelas", table: "cbt_jawaban", param: ['npm' => $loginData['id']]) : $this->essay_model->get_data_login(column: "nip", table: "cbt_soal", param: ['nip' => $loginData['id']]));
+            $getData = (is_numeric($loginData["id"]) ? $this->essay_model->get_data_login(column: "npm, kd_kelas, kd_progstudi", table: "cbt_jawaban", param: ['npm' => $loginData['id']]) : $this->essay_model->get_data_login(column: "nip", table: "cbt_soal", param: ['nip' => $loginData['id']]));
             if (count($getData) > 0 || is_null($getData)) {
                 if ($loginData['id'] !== $loginData['password']) {
                     $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
@@ -45,7 +45,7 @@ class Essay_Controller extends Essay
                         $this->session->set_userdata(['nip' => $getData['nip']]);
                         redirect('/');
                     } else {
-                        $this->session->set_userdata(['npm' => $getData['npm'], 'kd_kelas' => $getData['kd_kelas']]);
+                        $this->session->set_userdata(['npm' => $getData['npm'], 'kd_kelas' => $getData['kd_kelas'], 'kd_progstudi' => $getData['kd_progstudi']]);
                         redirect('essay_scoring_view');
                     }
                 }
@@ -114,7 +114,6 @@ class Essay_Controller extends Essay
                     'required' => 'Kunci Jawaban wajib diisi!'
                 ]
             ),
-
         );
         $this->form_validation->set_rules($dataValidation);
         if ($this->form_validation->run() === true) {
@@ -155,28 +154,49 @@ class Essay_Controller extends Essay
 
     public function add_jawaban_mhs()
     {
-        if ($this->input->method() === 'post') {
-            // $this->jawaban_essay = array(
-            //     'kd_jawaban' =>  $this->session->userdata('kd_soal') . rand(0, 10),
-            //     'kd_soal' => $this->session->userdata('kd_soal'),
-            //     'npm' => $this->input->post('input_npm'),
-            //     'nama_mahasiswa' => $this->input->post('input_mahasiswa'),
-            //     'jawaban' => $this->input->post('input_jawaban'),
-            // );
-            var_dump($this->input->post('jawaban'));
-            die();
-            // $remove_breakline_jawaban = str_replace(PHP_EOL, ' ', $this->jawaban_essay['jawaban']);
-            // $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('input_kunci_jawaban'));
-            // $final_score = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: $this->input->post('input_skor'), bobot: $this->input->post('input_bobot'));
-            // $final_score['kd_jawaban'] = $this->jawaban_essay['kd_jawaban'];
-            // // var_dump($final_score);
-            // $jawaban_saved = $this->essay_model->add_data(table: 'jawaban_mahasiswa', data: $this->jawaban_essay);
+        $dataValidation = array(
+            array(
+                'field' => 'jawaban',
+                'label' => 'Jawaban',
+                'rules' => 'required|trim',
+                'error' =>
+                [
+                    'required' => 'Jawaban tidak boleh kosong dan wajib diisi!'
+                ]
+            ),
+        );
+        $this->jawaban_essay = array(
+            'thn_akademik' => $this->input->post('thn_akademik'),
+            'semester' => $this->input->post('semester'),
+            'kd_kelas' => $this->input->post('kd_kelas'),
+            'kd_progstudi' => $this->input->post('kd_progstudi'),
+            'kd_matkul' => $this->input->post('kd_matkul'),
+            'kd_soal' => $this->input->post('kd_soal'),
+            'npm' => $this->input->post('npm'),
+            'jawaban' => $this->input->post('jawaban'),
+            'gambar' => '',
+            'date_insert' => date('Y-m-d h:m:s'),
+        );
 
-            // unset($final_score['skor_akhir']);
-            // $hasil_jawaban_saved = $this->essay_model->add_data(table: 'hasil_algoritma', data: $final_score);
-            // if ($jawaban_saved && $hasil_jawaban_saved) {
-            //     redirect(base_url('essay_scoring_view/' . $this->session->userdata('kd_soal') . '/' . $this->jawaban_essay['npm']));
-            // }
+        $this->form_validation->set_rules($dataValidation);
+        if ($this->form_validation->run() === true) {
+            $remove_breakline_jawaban = str_replace(PHP_EOL, ' ', $this->jawaban_essay['jawaban']);
+            $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
+            $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
+            $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
+            // var_dump($this->jawaban_essay);
+            // die();
+            $jawaban_saved = $this->essay_model->add_data(table: 'cbt_jawaban', data: $this->jawaban_essay);
+            if ($jawaban_saved) {
+                $this->session->set_userdata('success', '<div class="alert alert-success" role="alert">
+                Jawaban Berhasil Disimpan!
+                </div>');
+                redirect(base_url('essay_scoring_view_detail' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
+                    . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
+            }
+        } else {
+            redirect(base_url('essay_scoring_view_detail' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
+                . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
         }
     }
 
@@ -229,17 +249,8 @@ class Essay_Controller extends Essay
         }
         $final_score = ($score / $max_score) * $bobot;
         return array(
-            'pre_processing_jawaban' => json_encode($sinonim_processed_answer),
-            'pre_processing_kj' => json_encode($preprocessed_key_answer),
-            'tokenisasi_jawaban' => json_encode($tokenized_answer),
-            'tokenisasi_kj' => json_encode($tokenized_key_answer),
-            'hashing_jawaban' => json_encode($hashing_answer),
-            'hashing_kj' => json_encode($hashing_key_answer),
-            'winnowing_jawaban' => json_encode($winnowing_answer),
-            'winnowing_kj' => json_encode($winnowing_key_answer),
             'similarity' => $similarity,
-            'hasil_nilai' => $score,
-            'skor_akhir' => $final_score
+            'hasil_nilai' => $final_score
         );
     }
 
