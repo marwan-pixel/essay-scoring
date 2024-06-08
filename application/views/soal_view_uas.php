@@ -45,7 +45,6 @@ if (is_null($this->session->userdata('nip'))) {
   <tbody class="table-group-divider">
     <?php
     if (count($soal_matkul) !== 0) {
-
       foreach ($soal_matkul as $key => $value) { ?>
         <tr>
           <td><?= $key + 1; ?></td>
@@ -61,7 +60,7 @@ if (is_null($this->session->userdata('nip'))) {
             <?= $value->aktif == 1 ? 'Soal ditampilkan di CBT' : "Soal tidak ditampilkan di CBT" ?>
           </td>
           <td>
-            <a href="<?= base_url('update_status_soal_uas/' . $value->kd_soal . '/' . $value->aktif); ?>" class="btn btn-outline-secondary"><?= $value->aktif == 1 ? 'Soal Tidak Ditampilkan' : 'Soal Ditampilkan'; ?></a>
+            <a href="<?= base_url('update_status_soal_uas/' . $value->kd_soal . '/' . $value->aktif); ?>" class="update-status-soal btn btn-outline-secondary"><?= $value->aktif == 1 ? 'Soal Tidak Ditampilkan' : 'Soal Ditampilkan'; ?></a>
           </td>
         </tr>
       <?php
@@ -76,18 +75,3 @@ if (is_null($this->session->userdata('nip'))) {
   </tbody>
 </table>
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-
-<script>
-  $(document).ready(() => {
-    $('#ubahSoalEsai').on('show.bs.modal', function(event) {
-      let div = $(event.relatedTarget);
-      let modal = $(this);
-
-      modal.find(`#kodeSoal`).attr("value", div.data('kd-soal'));
-      modal.find(`#inputSoal`).val(div.data('soal'));
-      modal.find(`#inputSkor`).attr("value", div.data('skor'));
-      modal.find(`#inputBobot`).attr("value", div.data('bobot'));
-      modal.find(`#inputKunciJawaban`).val(div.data('kunci-jawaban'));
-    });
-  });
-</script>

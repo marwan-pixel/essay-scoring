@@ -2,6 +2,8 @@
 if (is_null($this->session->userdata('npm'))) {
     redirect('/login');
 }
+// var_dump($jawaban_mahasiswa);
+// die();
 ?>
 <div class="container">
     <a href="<?= base_url('/') ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
@@ -31,7 +33,7 @@ if (!is_null($soal_matakuliah)) :
                                         <?= $value->soal ?>
                                     </div>
                                     <div class="card-body">
-                                        <form action="<?= base_url('input_jawaban') ?>" method="post">
+                                        <form class="<?= is_null($jawaban_mahasiswa) ? 'tambah-data-jawaban' : 'update-data-jawaban'; ?>" action="<?= base_url(is_null($jawaban_mahasiswa[$key - 1]->jawaban) ? 'input_jawaban' : 'update_jawaban/' . $value->kd_soal . '/' . $this->session->userdata('npm')) ?>" method="post">
                                             <input type="hidden" name="thn_akademik" value="<?= $this->session->userdata('thn_akademik'); ?>">
                                             <input type="hidden" name="semester" value="<?= $semester; ?>">
                                             <input type="hidden" name="kd_kelas" value="<?= $kd_kelas; ?>">
@@ -44,7 +46,7 @@ if (!is_null($soal_matakuliah)) :
                                             <input type="hidden" name="kunci_jawaban" value="<?= $value->kunci_jawaban; ?>">
                                             <label for="jawaban" class="form-label">Silakan Masukkan Jawaban di bawah</label>
                                             <textarea name="jawaban" id="<?= 'jawaban' . $key ?>" cols="80"><?= $jawaban_mahasiswa[$key - 1]->jawaban ?? '' ?></textarea>
-                                            <button type="submit" class="btn btn-primary mt-2" onclick="">Simpan Jawaban</button>
+                                            <button type="submit" class="btn btn-primary mt-2"><?= is_null($jawaban_mahasiswa[$key - 1]->jawaban) ? 'Simpan Jawaban' : 'Update Jawaban'; ?> </button>
                                         </form>
                                         <script>
                                             CKEDITOR.replace("<?= 'jawaban' . $key ?>");

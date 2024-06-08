@@ -202,8 +202,8 @@ class Essay extends CI_Controller
             'ctype' => $ctype,
             'aktif' => 1
         ];
-        $this->soal_matakuliah = $this->essay_model->show_data('soal, kd_soal, kunci_jawaban, bobot_soal, ctype', 'cbt_soal', $get_soal_matakuliah);
-        $this->data_mahasiswa = $this->db->select('cbt_jawaban.jawaban, cbt_soal.soal, cbt_soal.kd_soal')
+        $this->soal_matakuliah = $this->essay_model->show_data(column: 'soal, kd_soal, kunci_jawaban, bobot_soal, ctype', table: 'cbt_soal', param: $get_soal_matakuliah, order_by: 'ASC', item_order: 'kd_soal');
+        $this->data_mahasiswa = $this->db->select('cbt_soal.soal, cbt_soal.kd_soal, cbt_jawaban.jawaban')->distinct()
             ->from('cbt_jawaban')
             ->join('cbt_soal', 'cbt_jawaban.kd_soal = cbt_soal.kd_soal')
             ->where([
@@ -214,7 +214,11 @@ class Essay extends CI_Controller
                 'cbt_soal.thn_akademik' => $this->session->userdata('thn_akademik'),
                 'cbt_jawaban.npm' => $this->session->userdata('npm')
             ])->order_by('cbt_soal.kd_soal', 'ASC')->get()->result();
-
+        // echo '<pre>';
+        // print_r($this->soal_matakuliah);
+        // print_r($this->data_mahasiswa);
+        // echo '</pre>';
+        // die();
         $this->load->view('template/header');
         $this->load->view('essay_scoring_view_detail', [
             'title' => "Esai", 'soal_matakuliah' => $this->soal_matakuliah,
