@@ -6,16 +6,16 @@ class Essay_model extends CI_Model
         return $this->db->insert($table, $data);
     }
 
-    public function show_data(string $column, string $table, array $param = null, bool $count = false, int $limit = null, int $offset = null, string $order_by = '', string $item_asc = '')
+    public function show_data(string $column, string $table, array $param = null, bool $count = false, int $limit = null, int $offset = null, string $order_by = '', string $item_order = '')
     {
         $this->db->select($column);
         if (str_contains($column, 'kd_matkul') || str_contains($column, 'thn_akademik')) {
             $query = $this->db->distinct();
         }
         if ($order_by == 'ASC') {
-            $this->db->order_by($item_asc, 'ASC');
+            $this->db->order_by($item_order, 'ASC');
         } else if ($order_by == 'DESC') {
-            $this->db->order_by($item_asc, 'DESC');
+            $this->db->order_by($item_order, 'DESC');
         }
         if (!is_null($param)) {
             $query = $this->db->get_where($table, $param);

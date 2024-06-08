@@ -116,19 +116,20 @@ class Essay_Controller extends Essay
             ),
         );
         $this->form_validation->set_rules($dataValidation);
+
         if ($this->form_validation->run() === true) {
             $soal_saved = $this->essay_model->add_data(table: 'cbt_soal', data: $this->soal_matakuliah);
             if ($soal_saved) {
                 $this->session->set_flashdata('success', '<div class="alert alert-success" role="alert">
-					Data Berhasil Ditambah
-					</div>');
+        			Data Berhasil Ditambah
+        			</div>');
                 redirect(base_url(($this->soal_matakuliah['ctype'] == 3 ? 'soal_view_uts/' : 'soal_view_uas/')
                     . $this->input->post('kd_progstudi') . '/' . $this->session->userdata('kd_matkul')
                     . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('semester') . '/'
                     . $this->input->post('ctype')));
             }
         } else {
-            redirect(base_url($this->soal_matakuliah['ctype'] == 3 ? 'soal_view_uts/' : 'soal_view_uas/'
+            redirect(base_url(($this->soal_matakuliah['ctype'] == 3 ? 'soal_view_uts' : 'soal_view_uas')
                 . '/' . $this->input->post('kd_progstudi') . '/' . $this->session->userdata('kd_matkul')
                 . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('semester') . '/'
                 . $this->input->post('ctype')));
@@ -184,8 +185,7 @@ class Essay_Controller extends Essay
             $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
             $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
             $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
-            // var_dump($this->jawaban_essay);
-            // die();
+
             $jawaban_saved = $this->essay_model->add_data(table: 'cbt_jawaban', data: $this->jawaban_essay);
             if ($jawaban_saved) {
                 $this->session->set_userdata('success', '<div class="alert alert-success" role="alert">
@@ -202,23 +202,46 @@ class Essay_Controller extends Essay
 
     public function update_jawaban_mhs($kd_soal, $npm)
     {
-        if ($this->input->method() === 'post') {
-            $this->jawaban_essay = array(
-                'jawaban' => $this->input->post('jawaban_mahasiswa'),
-            );
+        $dataValidation = array(
+            array(
+                'field' => 'jawaban',
+                'label' => 'Jawaban',
+                'rules' => 'required|trim',
+                'error' =>
+                [
+                    'required' => 'Jawaban tidak boleh kosong dan wajib diisi!'
+                ]
+            ),
+        );
+        $this->jawaban_essay = array(
+            'thn_akademik' => $this->input->post('thn_akademik'),
+            'semester' => $this->input->post('semester'),
+            'kd_kelas' => $this->input->post('kd_kelas'),
+            'kd_progstudi' => $this->input->post('kd_progstudi'),
+            'kd_matkul' => $this->input->post('kd_matkul'),
+            'kd_soal' => $this->input->post('kd_soal'),
+            'npm' => $this->input->post('npm'),
+            'jawaban' => $this->input->post('jawaban'),
+            'gambar' => '',
+            'date_update' => date('Y-m-d h:m:s'),
+        );
+        $this->form_validation->set_rules($dataValidation);
+        if ($this->form_validation->run() === true) {
             $remove_breakline_jawaban = str_replace(PHP_EOL, ' ', $this->jawaban_essay['jawaban']);
             $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
-            $final_score = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: $this->input->post('skor'), bobot: $this->input->post('bobot'));
-            $this->jawaban_essay['hasil_nilai'] = $final_score['skor_akhir'];
-            // var_dump($final_score);
+            $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
+            $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
             $jawaban_saved = $this->essay_model->update_data(table: 'cbt_jawaban', data: $this->jawaban_essay, param: ['kd_soal' => $kd_soal, 'npm' => $npm]);
-
-            unset($final_score['skor_akhir']);
-            // $hasil_jawaban_saved = $this->essay_model->update_data(table: 'hasil_algoritma', data: $final_score, param: ['kd_jawaban' => $kd_jawaban]);
             if ($jawaban_saved) {
-                $this->session->set_userdata($final_score);
-                redirect(base_url('essay_scoring_view/' . $this->session->userdata('kd_soal') . '/' . $npm));
+                $this->session->set_userdata('success', '<div class="alert alert-success" role="alert">
+                Jawaban Berhasil Diubah!
+                </div>');
+                redirect(base_url('essay_scoring_view_detail' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
+                    . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
             }
+        } else {
+            redirect(base_url('essay_scoring_view_detail' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
+                . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
         }
     }
 
