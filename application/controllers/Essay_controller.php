@@ -231,6 +231,10 @@ class Essay_Controller extends Essay
             $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
             $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
             $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
+            echo '<pre>';
+            print_r($nilai['similarity']);
+            echo '</pre>';
+            die();
             $jawaban_saved = $this->essay_model->update_data(table: 'cbt_jawaban', data: $this->jawaban_essay, param: ['kd_soal' => $kd_soal, 'npm' => $npm]);
             if ($jawaban_saved) {
                 $this->session->set_userdata('success', '<div class="alert alert-success" role="alert">
@@ -254,8 +258,8 @@ class Essay_Controller extends Essay
         $tokenized_key_answer = $this->tokenization($preprocessed_key_answer, 4);
         $hashing_answer = $this->rolling_hash($tokenized_answer, 3);
         $hashing_key_answer = $this->rolling_hash($tokenized_key_answer, 3);
-        $winnowing_answer = $this->winnowing($hashing_answer, 3);
-        $winnowing_key_answer = $this->winnowing($hashing_key_answer, 3);
+        $winnowing_answer = $this->winnowing($hashing_answer, 4);
+        $winnowing_key_answer = $this->winnowing($hashing_key_answer, 4);
         $similarity = $this->cosine_similarity(kunci_jawaban: $winnowing_key_answer, jawaban: $winnowing_answer);
         if ($similarity === 0) {
             $score = 0;
@@ -272,6 +276,14 @@ class Essay_Controller extends Essay
         }
         $final_score = ($score / $max_score) * $bobot;
         return array(
+            'sinonim_processed_answer' => $sinonim_processed_answer,
+            'preprocessed_key_answer' => $preprocessed_key_answer,
+            'tokenized_answer' => $tokenized_answer,
+            'tokenized_key_answer' => $tokenized_key_answer,
+            'hashing_answer' => $hashing_answer,
+            'hashing_key_answer' => $hashing_key_answer,
+            'winnowing_answer' => $winnowing_answer,
+            'winnowing_key_answer' => $winnowing_key_answer,
             'similarity' => $similarity,
             'hasil_nilai' => $final_score
         );
@@ -279,7 +291,9 @@ class Essay_Controller extends Essay
 
     private function text_preprocessing(string $kalimat): string
     {
-        $case_folding_kalimat = preg_replace('/[^\p{L}\s\s+]/u', "", strtolower(strip_tags($kalimat)));
+        $decoded_string = html_entity_decode(strip_tags($kalimat));
+        $cleaned_string = preg_replace('/[<>"\'&!--]/', '', $decoded_string);
+        $case_folding_kalimat = preg_replace('/[^\p{L}\s\s+]/u', "", strtolower(($cleaned_string)));
         exec('python ' . APPPATH . 'controllers/python/essay.py ' . escapeshellarg($case_folding_kalimat), $output);
         return ($output[0]);
     }
