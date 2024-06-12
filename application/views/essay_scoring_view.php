@@ -59,9 +59,9 @@ if (is_null($this->session->userdata('npm'))) {
                         <tr>
                             <td><?= ++$key ?></td>
                             <td class="d-flex align-items-center gap-3">
-                                <?= $value->kd_matkul ?>
-                                <a href="<?= base_url('essay_scoring_view_detail/' . $value->kd_matkul . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 3) ?>" class="btn btn-outline-secondary">UTS</a>
-                                <a href="<?= base_url('essay_scoring_view_detail/' . $value->kd_matkul . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 4) ?>" class="btn btn-outline-secondary">UAS</a>
+                                <?= $value['kd_matkul'] ?>
+                                <a href="<?= base_url('essay_scoring_view_detail/' . $value['kd_matkul'] . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 3) ?>" class="btn btn-outline-secondary">UTS</a>
+                                <a href="<?= base_url('essay_scoring_view_detail/' . $value['kd_matkul'] . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 4) ?>" class="btn btn-outline-secondary">UAS</a>
                             </td>
                         </tr>
                     <?php

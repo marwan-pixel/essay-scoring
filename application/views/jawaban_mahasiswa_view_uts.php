@@ -2,6 +2,8 @@
 if (is_null($this->session->userdata('nip'))) {
     redirect('/login');
 }
+// var_dump($mahasiswa);
+// die();
 ?>
 <a href="<?= base_url('/'); ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
 <h5 class="card-subtitle text-muted mb-3">Kode Matkul: <?= $kd_matkul; ?></h5>
@@ -22,17 +24,17 @@ if (is_null($this->session->userdata('nip'))) {
                     <td>
                         <?php
                         foreach ($jawaban_mahasiswa as $key => $value_2) :
-                            if ($value_2->npm == $value_1->npm) {
+                            if ($value_2['npm'] == $value_1->npm) {
                         ?>
                                 <div class="card">
                                     <div class="card-header">
-                                        <?= $value_2->soal; ?>
+                                        <?= $value_2['soal']; ?>
                                     </div>
                                     <div class="card-body">
-                                        <?= $value_2->jawaban; ?>
+                                        <?= $value_2['jawaban']; ?>
                                     </div>
                                     <div class="card-header">
-                                        <p>Nilai Perolehan Per Soal: <b><?= $value_2->hasil_nilai; ?></b></p>
+                                        <p>Nilai Perolehan Per Soal: <b><?= $value_2['hasil_nilai']; ?></b></p>
                                     </div>
                                 </div>
                                 <br>

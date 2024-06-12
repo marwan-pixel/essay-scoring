@@ -44,16 +44,16 @@
                 foreach ($mata_kuliah as $key => $value) { ?>
                     <tr>
                         <th><?= ++$key ?></th>
-                        <th><?= $value->semester ?></th>
-                        <th><?= $value->kd_kelas ?></th>
-                        <th><?= $value->kd_matkul ?></th>
+                        <th><?= $value['semester'] ?></th>
+                        <th><?= $value['kd_kelas'] ?></th>
+                        <th><?= $value['kd_matkul'] ?></th>
                         <th>
-                            <a href="<?= base_url('soal_view_uts/' . $value->kd_progstudi . '/' . $value->kd_matkul . '/' . $value->kd_kelas . '/' . $value->semester . '/' . 3); ?>" class="btn btn-outline-secondary">Input Soal</a>
-                            <a href="<?= base_url('jawaban_mahasiswa_view_uts/' . $value->kd_progstudi . '/' . $value->kd_matkul . '/' . $value->kd_kelas . '/' . $value->semester . '/' . 3); ?>" class="btn btn-outline-secondary">Jawaban Soal</a>
+                            <a href="<?= base_url('soal_view_uts/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 3); ?>" class="btn btn-outline-secondary">Input Soal</a>
+                            <a href="<?= base_url('jawaban_mahasiswa_view_uts/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 3); ?>" class="btn btn-outline-secondary">Jawaban Soal</a>
                         </th>
                         <th>
-                            <a href="<?= base_url('soal_view_uas/' . $value->kd_progstudi . '/' . $value->kd_matkul . '/' . $value->kd_kelas . '/' . $value->semester . '/' . 4); ?>" class="btn btn-outline-secondary">Input Soal</a>
-                            <a href="<?= base_url('jawaban_mahasiswa_view_uas/' . $value->kd_progstudi . '/' . $value->kd_matkul . '/' . $value->kd_kelas . '/' . $value->semester . '/' . 4); ?> " class="btn btn-outline-secondary">Jawaban Soal</a>
+                            <a href="<?= base_url('soal_view_uas/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 4); ?>" class="btn btn-outline-secondary">Input Soal</a>
+                            <a href="<?= base_url('jawaban_mahasiswa_view_uas/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 4); ?> " class="btn btn-outline-secondary">Jawaban Soal</a>
                         </th>
                     </tr>
                 <?php
@@ -69,18 +69,3 @@
         </tbody>
     </table>
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-
-    <script>
-        $(document).ready(() => {
-            $('#ubahSoalEsai').on('show.bs.modal', function(event) {
-                let div = $(event.relatedTarget);
-                let modal = $(this);
-
-                modal.find(`#kodeSoal`).attr("value", div.data('kd-soal'));
-                modal.find(`#inputSoal`).val(div.data('soal'));
-                modal.find(`#inputSkor`).attr("value", div.data('skor'));
-                modal.find(`#inputBobot`).attr("value", div.data('bobot'));
-                modal.find(`#inputKunciJawaban`).val(div.data('kunci-jawaban'));
-            });
-        });
-    </script>

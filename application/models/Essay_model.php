@@ -25,7 +25,7 @@ class Essay_model extends CI_Model
         if ($count) {
             return $query->num_rows();
         }
-        return $query->result();
+        return $query->result_array();
     }
 
     public function get_only_one_data(string $column, string $table, array $param = null, $desc = false, $item_desc = "")
