@@ -231,10 +231,10 @@ class Essay_Controller extends Essay
             $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
             $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
             $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
-            echo '<pre>';
-            print_r($nilai['similarity']);
-            echo '</pre>';
-            die();
+            // echo '<pre>';
+            // print_r($nilai['similarity']);
+            // echo '</pre>';
+            // die();
             $jawaban_saved = $this->essay_model->update_data(table: 'cbt_jawaban', data: $this->jawaban_essay, param: ['kd_soal' => $kd_soal, 'npm' => $npm]);
             if ($jawaban_saved) {
                 $this->session->set_userdata('success', '<div class="alert alert-success" role="alert">
