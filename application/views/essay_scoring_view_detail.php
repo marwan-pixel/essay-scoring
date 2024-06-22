@@ -44,7 +44,7 @@ if (!is_null($soal_matakuliah)) :
                                             <input type="hidden" name="kunci_jawaban" value="<?= $value->kunci_jawaban; ?>">
                                             <label for="jawaban" class="form-label">Silakan Masukkan Jawaban di bawah</label>
                                             <textarea name="jawaban" id="<?= 'jawaban' . $key ?>" cols="80"><?= $jawaban_mahasiswa[$key - 1]->jawaban ?? '' ?></textarea>
-                                            <button type="submit" class="btn btn-primary mt-2" onclick="">Simpan Jawaban</button>
+                                            <button type="submit" class="btn btn-primary mt-2">Simpan Jawaban</button>
                                         </form>
                                         <script>
                                             CKEDITOR.replace("<?= 'jawaban' . $key ?>");
