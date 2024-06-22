@@ -32,7 +32,7 @@ if (!is_null($soal_matakuliah)) :
                                         <?= $value['soal'] ?>
                                     </div>
                                     <div class="card-body">
-                                        <form class="<?= count($jawaban_mahasiswa) == 0 ? 'tambah-data-jawaban' : 'update-data-jawaban'; ?>" action="<?= base_url(count($jawaban_mahasiswa) == 0 ? 'input_jawaban' : 'update_jawaban/' . $value['kd_soal'] . '/' . $this->session->userdata('npm')) ?>" method="post">
+                                        <form class="simpan-data-jawaban" action="<?= base_url('simpan_jawaban_esai') ?>" method="post">
                                             <input type="hidden" name="thn_akademik" value="<?= $this->session->userdata('thn_akademik'); ?>">
                                             <input type="hidden" name="semester" value="<?= $semester; ?>">
                                             <input type="hidden" name="kd_kelas" value="<?= $kd_kelas; ?>">

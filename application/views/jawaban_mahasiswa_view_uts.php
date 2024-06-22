@@ -18,13 +18,16 @@ if (is_null($this->session->userdata('nip'))) {
                 <tr>
                     <td><b><?= $mhs + 1; ?></b></td>
                     <td><b><?= $value_1->npm; ?></b></td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>
+                    <td colspan="2">
                         <?php
+                        $total_skor = 0;
                         foreach ($jawaban_mahasiswa as $key => $value_2) :
                             if ($value_2['npm'] == $value_1->npm) {
+                                $total_skor += $value_2['hasil_nilai'];
                         ?>
                                 <div class="card">
                                     <div class="card-header">
@@ -38,13 +41,13 @@ if (is_null($this->session->userdata('nip'))) {
                                     </div>
                                 </div>
                                 <br>
+                                <b>Nilai: <?= $total_skor / count($total_soal); ?> </b>
                             <?php
                             }
                             ?>
 
                         <?php endforeach; ?>
                     </td>
-
                 </tr>
         <?php
             }

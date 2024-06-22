@@ -7,7 +7,7 @@
         <div class="row align-items-center">
             <div class="col-6">
                 <form class="mt-2 w-100 d-flex" action="<?= base_url('/'); ?>" method="post" id="thn_akademik">
-                    <select class="form-select" name="thn_akademik" aria-label="Default select example" onchange="this.form.submit();">
+                    <select class="form-select" name="thn_akademik" aria-label="Default select example" onchange="document.getElementById('thn_akademik').submit();">
                         <option selected value="<?= $this->session->userdata('thn_akademik') ?? $thn_akademik[0]->thn_akademik; ?>"><?= $this->session->userdata('thn_akademik') ?? $thn_akademik[0]->thn_akademik ?></option>
                         <?php
                         foreach ($thn_akademik as $key => $value) {
@@ -17,12 +17,11 @@
                         }
                         ?>
                     </select>
-                    <input type="submit" name="submit" class="btn btn-primary">
                 </form>
             </div>
             <div class="col-6 d-flex justify-content-end align-items-center gap-4">
                 <p class="py-2 border px-4 mt-3 rounded">NIP: <?= $this->session->userdata('nip'); ?></p>
-                <a href="<?= base_url('logout'); ?>" class="btn btn-outline-secondary">Logout</a>
+                <a href="<?= base_url('logout'); ?>" class="btn btn-outline-secondary logout">Logout</a>
             </div>
         </div>
     </div>

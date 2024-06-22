@@ -44,7 +44,7 @@ class Essay extends CI_Controller
         $thn_akademik = is_null($this->session->userdata('thn_akademik')) ? $this->session->set_userdata(array(
             'thn_akademik' => $data_thn_akademik[0]->thn_akademik,
         )) : $this->session->userdata('thn_akademik');
-        if ($this->input->post('submit')) {
+        if ($this->input->server('REQUEST_METHOD') === 'POST') {
             $thn_akademik = $this->input->post('thn_akademik');
             $this->session->set_userdata(array(
                 'thn_akademik' => $thn_akademik,
@@ -107,6 +107,11 @@ class Essay extends CI_Controller
             'thn_akademik' => $this->session->userdata('thn_akademik'),
             'kd_kelas' => $kd_kelas
         ], table: 'cbt_jawaban', item_desc: 'npm');
+        $this->soal_matakuliah = $this->essay_model->show_data(
+            column: 'kd_soal, soal, kunci_jawaban, aktif, bobot_soal',
+            table: 'cbt_soal',
+            param: ['kd_matkul' => $kd_matkul, 'ctype' => $ctype, 'semester' => $semester, 'kd_progstudi' => $kd_progstudi, 'thn_akademik' => $this->session->userdata('thn_akademik'), 'kd_kelas' => $kd_kelas, 'aktif' => 1],
+        );
         $this->data_mahasiswa = $this->db->select('cbt_jawaban.jawaban, cbt_jawaban.npm, cbt_soal.soal, cbt_soal.kd_soal, cbt_jawaban.hasil_nilai')
             ->from('cbt_jawaban')
             ->join('cbt_soal', 'cbt_jawaban.kd_soal = cbt_soal.kd_soal')
@@ -121,7 +126,7 @@ class Essay extends CI_Controller
         $this->load->view('template/header');
         $this->load->view(
             'jawaban_mahasiswa_view_uts',
-            ['kd_matkul' => $kd_matkul, 'jawaban_mahasiswa' => $this->data_mahasiswa, 'mahasiswa' => $mahasiswa]
+            ['kd_matkul' => $kd_matkul, 'jawaban_mahasiswa' => $this->data_mahasiswa, 'mahasiswa' => $mahasiswa, 'total_soal' => $this->soal_matakuliah]
         );
         $this->load->view('template/footer');
     }
