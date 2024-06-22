@@ -153,7 +153,7 @@ class Essay_Controller extends Essay
         }
     }
 
-    public function add_jawaban_mhs()
+    public function simpan_jawaban_esai()
     {
         $dataValidation = array(
             array(
@@ -185,8 +185,16 @@ class Essay_Controller extends Essay
             $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
             $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
             $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
-
-            $jawaban_saved = $this->essay_model->add_data(table: 'cbt_jawaban', data: $this->jawaban_essay);
+            // echo '<pre>';
+            // print_r($nilai);
+            // echo '</pre>';
+            // die();
+            $isAnswerSaved = $this->essay_model->show_data(column: 'jawaban', table: 'cbt_jawaban', param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
+            if (count($isAnswerSaved) == 0) {
+                $jawaban_saved = $this->essay_model->add_data(table: 'cbt_jawaban', data: $this->jawaban_essay);
+            } else {
+                $jawaban_saved = $this->essay_model->update_data(table: 'cbt_jawaban', data: $this->jawaban_essay, param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
+            }
             if ($jawaban_saved) {
                 $this->session->set_userdata('success', '<div class="alert alert-success" role="alert">
                 Jawaban Berhasil Disimpan!
@@ -199,62 +207,23 @@ class Essay_Controller extends Essay
                 . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
         }
     }
-
-    public function update_jawaban_mhs($kd_soal, $npm)
-    {
-        $dataValidation = array(
-            array(
-                'field' => 'jawaban',
-                'label' => 'Jawaban',
-                'rules' => 'required|trim',
-                'error' =>
-                [
-                    'required' => 'Jawaban tidak boleh kosong dan wajib diisi!'
-                ]
-            ),
-        );
-        $this->jawaban_essay = array(
-            'thn_akademik' => $this->input->post('thn_akademik'),
-            'semester' => $this->input->post('semester'),
-            'kd_kelas' => $this->input->post('kd_kelas'),
-            'kd_progstudi' => $this->input->post('kd_progstudi'),
-            'kd_matkul' => $this->input->post('kd_matkul'),
-            'kd_soal' => $this->input->post('kd_soal'),
-            'npm' => $this->input->post('npm'),
-            'jawaban' => $this->input->post('jawaban'),
-            'gambar' => '',
-            'date_update' => date('Y-m-d h:m:s'),
-        );
-        $this->form_validation->set_rules($dataValidation);
-        if ($this->form_validation->run() === true) {
-            $remove_breakline_jawaban = str_replace(PHP_EOL, ' ', $this->jawaban_essay['jawaban']);
-            $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
-            $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
-            $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
-            // echo '<pre>';
-            // print_r($nilai['similarity']);
-            // echo '</pre>';
-            // die();
-            $jawaban_saved = $this->essay_model->update_data(table: 'cbt_jawaban', data: $this->jawaban_essay, param: ['kd_soal' => $kd_soal, 'npm' => $npm]);
-            if ($jawaban_saved) {
-                $this->session->set_userdata('success', '<div class="alert alert-success" role="alert">
-                Jawaban Berhasil Diubah!
-                </div>');
-                redirect(base_url('essay_scoring_view_detail' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
-                    . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
-            }
-        } else {
-            redirect(base_url('essay_scoring_view_detail' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
-                . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
-        }
-    }
-
     public function essay_scoring(string $jawaban, string $kunci_jawaban, int $max_score, int $bobot)
     {
         $preprocessed_answer = $this->text_preprocessing($jawaban);
         $preprocessed_key_answer = $this->text_preprocessing($kunci_jawaban);
-        $sinonim_processed_answer = $this->sinonim_checker($preprocessed_answer, $preprocessed_key_answer);
-        $tokenized_answer = $this->tokenization($sinonim_processed_answer, 4);
+        // $sinonim_processed_answer = $this->sinonim_checker($preprocessed_answer, $preprocessed_key_answer);
+        $array_answer = explode(" ", $preprocessed_answer);
+        $array_key_answer = explode(" ", $preprocessed_key_answer);
+        $array = [];
+        if (count($array_answer) > count($array_key_answer)) {
+            for ($i = 0; $i < count($array_answer); $i++) {
+                if (in_array($array_answer[$i], $array_key_answer)) {
+                    array_push($array, $array_answer[$i]);
+                }
+            }
+            $preprocessed_answer = implode(" ", ($array));
+        }
+        $tokenized_answer = $this->tokenization($preprocessed_answer, 4);
         $tokenized_key_answer = $this->tokenization($preprocessed_key_answer, 4);
         $hashing_answer = $this->rolling_hash($tokenized_answer, 3);
         $hashing_key_answer = $this->rolling_hash($tokenized_key_answer, 3);
@@ -276,7 +245,7 @@ class Essay_Controller extends Essay
         }
         $final_score = ($score / $max_score) * $bobot;
         return array(
-            'sinonim_processed_answer' => $sinonim_processed_answer,
+            'preprocessed_answer' => $preprocessed_answer,
             'preprocessed_key_answer' => $preprocessed_key_answer,
             'tokenized_answer' => $tokenized_answer,
             'tokenized_key_answer' => $tokenized_key_answer,

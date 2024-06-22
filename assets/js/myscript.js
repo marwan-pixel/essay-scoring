@@ -14,7 +14,7 @@ $('.update-status-soal').on('click', function(e) {
         if (result.value) {
             document.location.href = href;
         }
-    })
+    });
 });
 
 $('.tambah-data-soal').on('submit', function(e) {
@@ -35,7 +35,7 @@ $('.tambah-data-soal').on('submit', function(e) {
     });
 });
 
-$('.tambah-data-jawaban').on('submit', function(e) {
+$('.simpan-data-jawaban').on('submit', function(e) {
     e.preventDefault();
     Swal.fire({
         title: 'Menyimpan Jawaban',
@@ -53,21 +53,21 @@ $('.tambah-data-jawaban').on('submit', function(e) {
     });
 });
 
-$('.update-data-jawaban').on('click', function(e) {
+$('.logout').on('click', function(e) {
     e.preventDefault();
     const href = $(this).attr('href');
     Swal.fire({
-        title: 'Meng-update Jawaban',
-        text: " Apakah anda yakin ingin meng-update jawaban ini?",
+        title: 'Logout',
+        text: " Apakah anda yakin ingin Keluar?",
         icon: 'warning',
         showCancelButton: true,
         cancelButtonText: 'Batal',
         confirmButtonColor: 'blue',
         cancelButtonColor: '#6c757d',
-        confirmButtonText: 'Ubah Status'
+        confirmButtonText: 'Keluar'
     }).then((result) => {
         if (result.value) {
-            this.submit();
+            document.location.href = href;
         }
-    })
+    });
 });
