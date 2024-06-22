@@ -37,7 +37,7 @@ if (is_null($this->session->userdata('npm'))) {
         </div>
         <div class="col-6 d-flex justify-content-end align-items-center gap-4">
             <p class="py-2 border px-4 mt-3 rounded">NPM: <?= $this->session->userdata('npm'); ?></p>
-            <a href="<?= base_url('logout'); ?>" class="btn btn-outline-secondary ">Logout</a>
+            <a href="<?= base_url('logout'); ?>" class="btn btn-outline-secondary logout">Logout</a>
         </div>
     </div>
 </div>
@@ -59,9 +59,9 @@ if (is_null($this->session->userdata('npm'))) {
                         <tr>
                             <td><?= ++$key ?></td>
                             <td class="d-flex align-items-center gap-3">
-                                <?= $value->kd_matkul ?>
-                                <a href="<?= base_url('essay_scoring_view_detail/' . $value->kd_matkul . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 3) ?>" class="btn btn-outline-secondary">UTS</a>
-                                <a href="<?= base_url('essay_scoring_view_detail/' . $value->kd_matkul . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 4) ?>" class="btn btn-outline-secondary">UAS</a>
+                                <?= $value['kd_matkul'] ?>
+                                <a href="<?= base_url('essay_scoring_view_detail/' . $value['kd_matkul'] . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 3) ?>" class="btn btn-outline-secondary">Soal UTS</a>
+                                <a href="<?= base_url('essay_scoring_view_detail/' . $value['kd_matkul'] . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 4) ?>" class="btn btn-outline-secondary">Soal UAS</a>
                             </td>
                         </tr>
                     <?php

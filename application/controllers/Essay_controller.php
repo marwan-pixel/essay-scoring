@@ -116,19 +116,20 @@ class Essay_Controller extends Essay
             ),
         );
         $this->form_validation->set_rules($dataValidation);
+
         if ($this->form_validation->run() === true) {
             $soal_saved = $this->essay_model->add_data(table: 'cbt_soal', data: $this->soal_matakuliah);
             if ($soal_saved) {
                 $this->session->set_flashdata('success', '<div class="alert alert-success" role="alert">
-					Data Berhasil Ditambah
-					</div>');
+        			Data Berhasil Ditambah
+        			</div>');
                 redirect(base_url(($this->soal_matakuliah['ctype'] == 3 ? 'soal_view_uts/' : 'soal_view_uas/')
                     . $this->input->post('kd_progstudi') . '/' . $this->session->userdata('kd_matkul')
                     . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('semester') . '/'
                     . $this->input->post('ctype')));
             }
         } else {
-            redirect(base_url($this->soal_matakuliah['ctype'] == 3 ? 'soal_view_uts/' : 'soal_view_uas/'
+            redirect(base_url(($this->soal_matakuliah['ctype'] == 3 ? 'soal_view_uts' : 'soal_view_uas')
                 . '/' . $this->input->post('kd_progstudi') . '/' . $this->session->userdata('kd_matkul')
                 . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('semester') . '/'
                 . $this->input->post('ctype')));
@@ -152,7 +153,7 @@ class Essay_Controller extends Essay
         }
     }
 
-    public function add_jawaban_mhs()
+    public function simpan_jawaban_esai()
     {
         $dataValidation = array(
             array(
@@ -184,9 +185,16 @@ class Essay_Controller extends Essay
             $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
             $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
             $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
-            // var_dump($this->jawaban_essay);
+            // echo '<pre>';
+            // print_r($nilai);
+            // echo '</pre>';
             // die();
-            $jawaban_saved = $this->essay_model->add_data(table: 'cbt_jawaban', data: $this->jawaban_essay);
+            $isAnswerSaved = $this->essay_model->show_data(column: 'jawaban', table: 'cbt_jawaban', param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
+            if (count($isAnswerSaved) == 0) {
+                $jawaban_saved = $this->essay_model->add_data(table: 'cbt_jawaban', data: $this->jawaban_essay);
+            } else {
+                $jawaban_saved = $this->essay_model->update_data(table: 'cbt_jawaban', data: $this->jawaban_essay, param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
+            }
             if ($jawaban_saved) {
                 $this->session->set_userdata('success', '<div class="alert alert-success" role="alert">
                 Jawaban Berhasil Disimpan!
@@ -199,40 +207,28 @@ class Essay_Controller extends Essay
                 . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
         }
     }
-
-    public function update_jawaban_mhs($kd_soal, $npm)
-    {
-        if ($this->input->method() === 'post') {
-            $this->jawaban_essay = array(
-                'jawaban' => $this->input->post('jawaban_mahasiswa'),
-            );
-            $remove_breakline_jawaban = str_replace(PHP_EOL, ' ', $this->jawaban_essay['jawaban']);
-            $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
-            $final_score = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: $this->input->post('skor'), bobot: $this->input->post('bobot'));
-            $this->jawaban_essay['hasil_nilai'] = $final_score['skor_akhir'];
-            // var_dump($final_score);
-            $jawaban_saved = $this->essay_model->update_data(table: 'cbt_jawaban', data: $this->jawaban_essay, param: ['kd_soal' => $kd_soal, 'npm' => $npm]);
-
-            unset($final_score['skor_akhir']);
-            // $hasil_jawaban_saved = $this->essay_model->update_data(table: 'hasil_algoritma', data: $final_score, param: ['kd_jawaban' => $kd_jawaban]);
-            if ($jawaban_saved) {
-                $this->session->set_userdata($final_score);
-                redirect(base_url('essay_scoring_view/' . $this->session->userdata('kd_soal') . '/' . $npm));
-            }
-        }
-    }
-
     public function essay_scoring(string $jawaban, string $kunci_jawaban, int $max_score, int $bobot)
     {
         $preprocessed_answer = $this->text_preprocessing($jawaban);
         $preprocessed_key_answer = $this->text_preprocessing($kunci_jawaban);
-        $sinonim_processed_answer = $this->sinonim_checker($preprocessed_answer, $preprocessed_key_answer);
-        $tokenized_answer = $this->tokenization($sinonim_processed_answer, 4);
+        // $sinonim_processed_answer = $this->sinonim_checker($preprocessed_answer, $preprocessed_key_answer);
+        $array_answer = explode(" ", $preprocessed_answer);
+        $array_key_answer = explode(" ", $preprocessed_key_answer);
+        $array = [];
+        if (count($array_answer) > count($array_key_answer)) {
+            for ($i = 0; $i < count($array_answer); $i++) {
+                if (in_array($array_answer[$i], $array_key_answer)) {
+                    array_push($array, $array_answer[$i]);
+                }
+            }
+            $preprocessed_answer = implode(" ", ($array));
+        }
+        $tokenized_answer = $this->tokenization($preprocessed_answer, 4);
         $tokenized_key_answer = $this->tokenization($preprocessed_key_answer, 4);
         $hashing_answer = $this->rolling_hash($tokenized_answer, 3);
         $hashing_key_answer = $this->rolling_hash($tokenized_key_answer, 3);
-        $winnowing_answer = $this->winnowing($hashing_answer, 3);
-        $winnowing_key_answer = $this->winnowing($hashing_key_answer, 3);
+        $winnowing_answer = $this->winnowing($hashing_answer, 4);
+        $winnowing_key_answer = $this->winnowing($hashing_key_answer, 4);
         $similarity = $this->cosine_similarity(kunci_jawaban: $winnowing_key_answer, jawaban: $winnowing_answer);
         if ($similarity === 0) {
             $score = 0;
@@ -249,6 +245,14 @@ class Essay_Controller extends Essay
         }
         $final_score = ($score / $max_score) * $bobot;
         return array(
+            'preprocessed_answer' => $preprocessed_answer,
+            'preprocessed_key_answer' => $preprocessed_key_answer,
+            'tokenized_answer' => $tokenized_answer,
+            'tokenized_key_answer' => $tokenized_key_answer,
+            'hashing_answer' => $hashing_answer,
+            'hashing_key_answer' => $hashing_key_answer,
+            'winnowing_answer' => $winnowing_answer,
+            'winnowing_key_answer' => $winnowing_key_answer,
             'similarity' => $similarity,
             'hasil_nilai' => $final_score
         );
@@ -256,8 +260,15 @@ class Essay_Controller extends Essay
 
     private function text_preprocessing(string $kalimat): string
     {
+<<<<<<< HEAD
         $case_folding_kalimat = preg_replace('/[^\p{L}\s\s+]/u', "", strtolower(strip_tags($kalimat)));
         exec('py ' . APPPATH . 'controllers/python/essay.py ' . escapeshellarg($case_folding_kalimat), $output);
+=======
+        $decoded_string = html_entity_decode(strip_tags($kalimat));
+        $cleaned_string = preg_replace('/[<>"\'&!--]/', '', $decoded_string);
+        $case_folding_kalimat = preg_replace('/[^\p{L}\s\s+]/u', "", strtolower(($cleaned_string)));
+        exec('python ' . APPPATH . 'controllers/python/essay.py ' . escapeshellarg($case_folding_kalimat), $output);
+>>>>>>> 9afeab2c1063a7e801076d5e2b383b7d878f9b59
         return ($output[0]);
     }
 

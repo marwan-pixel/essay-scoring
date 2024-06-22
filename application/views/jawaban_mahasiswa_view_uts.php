@@ -2,6 +2,8 @@
 if (is_null($this->session->userdata('nip'))) {
     redirect('/login');
 }
+// var_dump($mahasiswa);
+// die();
 ?>
 <a href="<?= base_url('/'); ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
 <h5 class="card-subtitle text-muted mb-3">Kode Matkul: <?= $kd_matkul; ?></h5>
@@ -16,33 +18,36 @@ if (is_null($this->session->userdata('nip'))) {
                 <tr>
                     <td><b><?= $mhs + 1; ?></b></td>
                     <td><b><?= $value_1->npm; ?></b></td>
+                    <td></td>
                 </tr>
                 <tr>
                     <td></td>
-                    <td>
+                    <td colspan="2">
                         <?php
+                        $total_skor = 0;
                         foreach ($jawaban_mahasiswa as $key => $value_2) :
-                            if ($value_2->npm == $value_1->npm) {
+                            if ($value_2['npm'] == $value_1->npm) {
+                                $total_skor += $value_2['hasil_nilai'];
                         ?>
                                 <div class="card">
                                     <div class="card-header">
-                                        <?= $value_2->soal; ?>
+                                        <?= $value_2['soal']; ?>
                                     </div>
                                     <div class="card-body">
-                                        <?= $value_2->jawaban; ?>
+                                        <?= $value_2['jawaban']; ?>
                                     </div>
                                     <div class="card-header">
-                                        <p>Nilai Perolehan Per Soal: <b><?= $value_2->hasil_nilai; ?></b></p>
+                                        <p>Nilai Perolehan Per Soal: <b><?= $value_2['hasil_nilai']; ?></b></p>
                                     </div>
                                 </div>
                                 <br>
+                                <b>Nilai: <?= $total_skor / count($total_soal); ?> </b>
                             <?php
                             }
                             ?>
 
                         <?php endforeach; ?>
                     </td>
-
                 </tr>
         <?php
             }

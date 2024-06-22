@@ -23,18 +23,29 @@ echo $this->session->flashdata('message'); ?>
         <tr>
           <td><?= $key + 1; ?></td>
           <td class="col-5">
-            <?= $value->soal ?? ''; ?>
+            <?= $value['soal'] ?? ''; ?>
             <div class="card">
               <div class="card-body">
-                <?= $value->kunci_jawaban ?? ''; ?>
+                <div class="card-title">
+                  <p><b>Kunci Jawaban:</b></p>
+                </div>
+                <?= $value['kunci_jawaban'] ?? ''; ?>
+              </div>
+            </div>
+            <div class="card mt-3">
+              <div class="card-body">
+                <div class="card-title">
+                  <p><b>Bobot Soal:</b></p>
+                </div>
+                <?= $value['bobot_soal'] ?? ''; ?>
               </div>
             </div>
           </td>
           <td>
-            <?= $value->aktif == 1 ? 'Soal ditampilkan di CBT' : "Soal tidak ditampilkan di CBT" ?>
+            <?= $value['aktif'] == 1 ? 'Soal ditampilkan di CBT' : "Soal tidak ditampilkan di CBT" ?>
           </td>
           <td>
-            <a href="<?= base_url('update_status_soal_uts/' . $kd_progstudi . '/' . $kd_matkul . '/' . $kd_kelas . '/' . $semester . '/' . $ctype . '/' . $value->kd_soal . '/' . $value->aktif); ?>" class="btn btn-outline-secondary"><?= $value->aktif == 1 ? 'Soal Tidak Ditampilkan' : 'Soal Ditampilkan'; ?></a>
+            <a href="<?= base_url('update_status_soal_uts/' . $kd_progstudi . '/' . $kd_matkul . '/' . $kd_kelas . '/' . $semester . '/' . $ctype . '/' . $value['kd_soal'] . '/' . $value['aktif']); ?>" id="" class="update-status-soal btn btn-outline-secondary"><?= $value['aktif'] == 1 ? 'Soal Tidak Ditampilkan' : 'Soal Ditampilkan'; ?></a>
           </td>
         </tr>
       <?php
@@ -48,7 +59,7 @@ echo $this->session->flashdata('message'); ?>
     <?php } ?>
   </tbody>
 </table>
-<form action="<?= base_url('input_soal'); ?>" method="post">
+<form action="<?= base_url('input_soal'); ?>" class="tambah-data-soal" method="post">
   <input type="hidden" name="kd_progstudi" value="<?= $kd_progstudi ?>" id="">
   <input type="hidden" name="semester" value="<?= $semester ?>" id="">
   <input type="hidden" name="kd_kelas" value="<?= $kd_kelas ?>" id="">
@@ -72,8 +83,9 @@ echo $this->session->flashdata('message'); ?>
       <div class="mt-3">
         <label for="bobot" class="form-label ">Bobot Soal</label>
         <input type="number" name="bobot_soal" id="bobot" class="form-control">
+        <?= form_error('bobot_soal', '<small class="text-danger pl-3">', '</small>'); ?>
       </div>
-      <button type="submit" class="btn btn-primary mt-3">Simpan Data</button>
+      <button type="submit" class=" btn btn-primary mt-3">Simpan Data</button>
     </div>
     <script>
       CKEDITOR.replace('soal');
@@ -81,22 +93,4 @@ echo $this->session->flashdata('message'); ?>
     </script>
   </div>
 </form>
-<?= count($soal_matkul) !== 0 && count($soal_matkul) > 12 ? $this->pagination->create_links() : ''; ?>
-
-
 <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
-
-<script>
-  $(document).ready(() => {
-    $('#ubahSoalEsai').on('show.bs.modal', function(event) {
-      let div = $(event.relatedTarget);
-      let modal = $(this);
-
-      modal.find(`#kodeSoal`).attr("value", div.data('kd-soal'));
-      modal.find(`#inputSoal`).val(div.data('soal'));
-      modal.find(`#inputSkor`).attr("value", div.data('skor'));
-      modal.find(`#inputBobot`).attr("value", div.data('bobot'));
-      modal.find(`#inputKunciJawaban`).val(div.data('kunci-jawaban'));
-    });
-  });
-</script>

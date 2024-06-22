@@ -28,18 +28,9 @@ class Essay extends CI_Controller
     {
         parent::__construct();
         $this->load->model('essay_model');
-        $this->load->library('pagination');
         $this->load->helper('url');
         $this->load->library('form_validation');
         $this->load->library("session");
-    }
-    private function paginationInitialize(string $link, string $data, string $table)
-    {
-        return array(
-            'base_url' => base_url($link),
-            'total_rows' => $this->essay_model->show_data(column: $data, table: $table, count: true),
-            'per_page' => 12,
-        );
     }
 
     public function index()
@@ -50,17 +41,18 @@ class Essay extends CI_Controller
             desc: true,
             item_desc: 'thn_akademik'
         );
-
-        $data_param = ['nip' => $this->session->userdata('nip'), 'thn_akademik' => is_null($this->session->userdata('thn_akademik')) ? $data_thn_akademik[0]->thn_akademik : $this->session->userdata('thn_akademik')];
-        if ($this->input->post('submit')) {
+        $thn_akademik = is_null($this->session->userdata('thn_akademik')) ? $this->session->set_userdata(array(
+            'thn_akademik' => $data_thn_akademik[0]->thn_akademik,
+        )) : $this->session->userdata('thn_akademik');
+        if ($this->input->server('REQUEST_METHOD') === 'POST') {
             $thn_akademik = $this->input->post('thn_akademik');
             $this->session->set_userdata(array(
                 'thn_akademik' => $thn_akademik,
             ));
-            $data_param['thn_akademik'] = $thn_akademik;
         } else {
             $thn_akademik = $this->session->userdata('thn_akademik');
         }
+        $data_param = ['nip' => $this->session->userdata('nip'), 'thn_akademik' => $thn_akademik];
         $this->mata_kuliah = $this->essay_model->show_data(column: "kd_matkul, semester, kd_kelas, kd_progstudi", table: 'cbt_soal', param: $data_param);
         $this->load->view('template/header');
         $this->load->view('home_view', ['no' => 1, 'mata_kuliah' => $this->mata_kuliah, 'thn_akademik' =>  $data_thn_akademik]);
@@ -78,7 +70,7 @@ class Essay extends CI_Controller
     {
         $this->session->set_userdata('kd_matkul', $kd_matkul);
         $this->soal_matakuliah = $this->essay_model->show_data(
-            column: 'kd_soal, soal, kunci_jawaban, aktif',
+            column: 'kd_soal, soal, kunci_jawaban, aktif, bobot_soal',
             table: 'cbt_soal',
             param: ['kd_matkul' => $kd_matkul, 'ctype' => $ctype, 'semester' => $semester, 'kd_progstudi' => $kd_progstudi, 'thn_akademik' => $this->session->userdata('thn_akademik'), 'kd_kelas' => $kd_kelas],
         );
@@ -92,9 +84,8 @@ class Essay extends CI_Controller
     public function soal_view_uas($kd_progstudi, $kd_matkul, $kd_kelas, $semester, $ctype)
     {
         $this->session->set_userdata('kd_matkul', $kd_matkul);
-
         $this->soal_matakuliah = $this->essay_model->show_data(
-            column: 'kd_soal, soal, kunci_jawaban',
+            column: 'kd_soal, soal, kunci_jawaban, aktif, bobot_soal',
             table: 'cbt_soal',
             param: ['kd_matkul' => $kd_matkul, 'ctype' => $ctype, 'semester' => $semester, 'kd_progstudi' => $kd_progstudi, 'thn_akademik' => $this->session->userdata('thn_akademik'), 'kd_kelas' => $kd_kelas],
         );
@@ -116,6 +107,11 @@ class Essay extends CI_Controller
             'thn_akademik' => $this->session->userdata('thn_akademik'),
             'kd_kelas' => $kd_kelas
         ], table: 'cbt_jawaban', item_desc: 'npm');
+        $this->soal_matakuliah = $this->essay_model->show_data(
+            column: 'kd_soal, soal, kunci_jawaban, aktif, bobot_soal',
+            table: 'cbt_soal',
+            param: ['kd_matkul' => $kd_matkul, 'ctype' => $ctype, 'semester' => $semester, 'kd_progstudi' => $kd_progstudi, 'thn_akademik' => $this->session->userdata('thn_akademik'), 'kd_kelas' => $kd_kelas, 'aktif' => 1],
+        );
         $this->data_mahasiswa = $this->db->select('cbt_jawaban.jawaban, cbt_jawaban.npm, cbt_soal.soal, cbt_soal.kd_soal, cbt_jawaban.hasil_nilai')
             ->from('cbt_jawaban')
             ->join('cbt_soal', 'cbt_jawaban.kd_soal = cbt_soal.kd_soal')
@@ -126,14 +122,15 @@ class Essay extends CI_Controller
                 'cbt_soal.kd_progstudi' => $kd_progstudi,
                 'cbt_soal.semester' => $semester,
                 'cbt_soal.thn_akademik' => $this->session->userdata('thn_akademik')
-            ])->order_by('cbt_jawaban.npm', 'DESC')->get()->result();
+            ])->order_by('cbt_jawaban.npm', 'DESC')->get()->result_array();
         $this->load->view('template/header');
         $this->load->view(
             'jawaban_mahasiswa_view_uts',
-            ['kd_matkul' => $kd_matkul, 'jawaban_mahasiswa' => $this->data_mahasiswa, 'mahasiswa' => $mahasiswa]
+            ['kd_matkul' => $kd_matkul, 'jawaban_mahasiswa' => $this->data_mahasiswa, 'mahasiswa' => $mahasiswa, 'total_soal' => $this->soal_matakuliah]
         );
         $this->load->view('template/footer');
     }
+
     public function jawaban_mahasiswa_view_uas($kd_progstudi, $kd_matkul, $kd_kelas, $semester, $ctype)
     {
         $this->session->set_userdata('kd_matkul', $kd_matkul);
@@ -152,7 +149,7 @@ class Essay extends CI_Controller
                 'cbt_soal.kd_progstudi' => $kd_progstudi,
                 'cbt_soal.semester' => $semester,
                 'cbt_soal.thn_akademik' => $this->session->userdata('thn_akademik')
-            ])->order_by('cbt_jawaban.npm', 'DESC')->get()->result();
+            ])->order_by('cbt_jawaban.npm', 'DESC')->get()->result_array();
 
         $this->load->view('template/header');
         $this->load->view(
@@ -202,8 +199,9 @@ class Essay extends CI_Controller
             'ctype' => $ctype,
             'aktif' => 1
         ];
-        $this->soal_matakuliah = $this->essay_model->show_data('soal, kd_soal, kunci_jawaban, bobot_soal, ctype', 'cbt_soal', $get_soal_matakuliah);
-        $this->data_mahasiswa = $this->db->select('cbt_jawaban.jawaban, cbt_soal.soal, cbt_soal.kd_soal')
+
+        $this->soal_matakuliah = $this->essay_model->show_data(column: 'soal, kd_soal, kunci_jawaban, bobot_soal, ctype', table: 'cbt_soal', param: $get_soal_matakuliah, order_by: 'ASC', item_order: 'kd_soal');
+        $this->data_mahasiswa = $this->db->select('cbt_soal.soal, cbt_soal.kd_soal, cbt_jawaban.jawaban')->distinct()
             ->from('cbt_jawaban')
             ->join('cbt_soal', 'cbt_jawaban.kd_soal = cbt_soal.kd_soal')
             ->where([
@@ -213,8 +211,12 @@ class Essay extends CI_Controller
                 'cbt_soal.semester' => $semester,
                 'cbt_soal.thn_akademik' => $this->session->userdata('thn_akademik'),
                 'cbt_jawaban.npm' => $this->session->userdata('npm')
-            ])->order_by('cbt_soal.kd_soal', 'ASC')->get()->result();
-
+            ])->order_by('cbt_soal.kd_soal', 'ASC')->get()->result_array();
+        // echo '<pre>';
+        // print_r($this->soal_matakuliah);
+        // print_r($this->data_mahasiswa);
+        // echo '</pre>';
+        // die();
         $this->load->view('template/header');
         $this->load->view('essay_scoring_view_detail', [
             'title' => "Esai", 'soal_matakuliah' => $this->soal_matakuliah,
