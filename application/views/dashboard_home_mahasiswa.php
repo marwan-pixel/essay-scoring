@@ -6,7 +6,7 @@ if (is_null($this->session->userdata('npm'))) {
 <div class="container">
     <div class="row align-items-center">
         <div class="col-6">
-            <form action="<?= base_url('essay_scoring_view') ?>" class="d-flex gap-3 align-items-center" method="post" id="form">
+            <form action="<?= base_url('dashboard_home_mahasiswa') ?>" class="d-flex gap-3 align-items-center" method="post" id="form">
                 <div class="input-group">
                     <label class="input-group-text" for="inputGroupSelect01">Tahun Akademik</label>
                     <select class="form-select" name="thn_akademik" id="thn_akademik" onchange="document.getElementById('form').submit();">
@@ -60,8 +60,8 @@ if (is_null($this->session->userdata('npm'))) {
                             <td><?= ++$key ?></td>
                             <td class="d-flex align-items-center gap-3">
                                 <?= $value['kd_matkul'] ?>
-                                <a href="<?= base_url('essay_scoring_view_detail/' . $value['kd_matkul'] . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 3) ?>" class="btn btn-outline-secondary">Soal UTS</a>
-                                <a href="<?= base_url('essay_scoring_view_detail/' . $value['kd_matkul'] . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 4) ?>" class="btn btn-outline-secondary">Soal UAS</a>
+                                <a href="<?= base_url('menjawab_soal_esai/' . $value['kd_matkul'] . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 3) ?>" class="btn btn-outline-secondary">Soal UTS</a>
+                                <a href="<?= base_url('menjawab_soal_esai/' . $value['kd_matkul'] . '/' . $this->session->userdata('semester') . '/' . $this->session->userdata('kd_kelas')  . '/' . 4) ?>" class="btn btn-outline-secondary">Soal UAS</a>
                             </td>
                         </tr>
                     <?php

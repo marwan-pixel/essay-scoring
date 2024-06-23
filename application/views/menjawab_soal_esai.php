@@ -4,7 +4,7 @@ if (is_null($this->session->userdata('npm'))) {
 }
 ?>
 <div class="container">
-    <a href="<?= base_url('/') ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
+    <a href="<?= base_url('dashboard_home_mahasiswa') ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
     <h4>Mata Kuliah: <?= $kd_matkul ?></h4>
 </div>
 <?php

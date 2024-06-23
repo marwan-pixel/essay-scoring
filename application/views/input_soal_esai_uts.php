@@ -45,7 +45,7 @@ echo $this->session->flashdata('message'); ?>
             <?= $value['aktif'] == 1 ? 'Soal ditampilkan di CBT' : "Soal tidak ditampilkan di CBT" ?>
           </td>
           <td>
-            <a href="<?= base_url('update_status_soal_uts/' . $kd_progstudi . '/' . $kd_matkul . '/' . $kd_kelas . '/' . $semester . '/' . $ctype . '/' . $value['kd_soal'] . '/' . $value['aktif']); ?>" id="" class="update-status-soal btn btn-outline-secondary"><?= $value['aktif'] == 1 ? 'Soal Tidak Ditampilkan' : 'Soal Ditampilkan'; ?></a>
+            <a href="<?= base_url('update_status_soal/' . $kd_progstudi . '/' . $kd_matkul . '/' . $kd_kelas . '/' . $semester . '/' . $ctype . '/' . $value['kd_soal'] . '/' . $value['aktif']); ?>" id="" class="update-status-soal btn btn-outline-secondary"><?= $value['aktif'] == 1 ? 'Soal Tidak Ditampilkan' : 'Soal Ditampilkan'; ?></a>
           </td>
         </tr>
       <?php
