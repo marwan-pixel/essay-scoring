@@ -185,10 +185,10 @@ class Essay_Controller extends Essay
             $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
             $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
             $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
-            // echo '<pre>';
-            // print_r($nilai);
-            // echo '</pre>';
-            // die();
+            echo '<pre>';
+            print_r($nilai);
+            echo '</pre>';
+            die();
             $isAnswerSaved = $this->essay_model->show_data(column: 'jawaban', table: 'cbt_jawaban', param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
             if (count($isAnswerSaved) == 0) {
                 $jawaban_saved = $this->essay_model->add_data(table: 'cbt_jawaban', data: $this->jawaban_essay);
@@ -260,15 +260,8 @@ class Essay_Controller extends Essay
 
     private function text_preprocessing(string $kalimat): string
     {
-<<<<<<< HEAD
         $case_folding_kalimat = preg_replace('/[^\p{L}\s\s+]/u', "", strtolower(strip_tags($kalimat)));
         exec('py ' . APPPATH . 'controllers/python/essay.py ' . escapeshellarg($case_folding_kalimat), $output);
-=======
-        $decoded_string = html_entity_decode(strip_tags($kalimat));
-        $cleaned_string = preg_replace('/[<>"\'&!--]/', '', $decoded_string);
-        $case_folding_kalimat = preg_replace('/[^\p{L}\s\s+]/u', "", strtolower(($cleaned_string)));
-        exec('python ' . APPPATH . 'controllers/python/essay.py ' . escapeshellarg($case_folding_kalimat), $output);
->>>>>>> 9afeab2c1063a7e801076d5e2b383b7d878f9b59
         return ($output[0]);
     }
 

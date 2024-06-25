@@ -44,25 +44,8 @@ if (!is_null($soal_matakuliah)) :
                                             <input type="hidden" name="ctype" value="<?= $value['ctype']; ?>">
                                             <input type="hidden" name="kunci_jawaban" value="<?= $value['kunci_jawaban']; ?>">
                                             <label for="jawaban" class="form-label">Silakan Masukkan Jawaban di bawah</label>
-<<<<<<< HEAD
                                             <textarea name="jawaban" id="<?= 'jawaban' . $key ?>" cols="80"><?= $jawaban_mahasiswa[$key - 1]->jawaban ?? '' ?></textarea>
                                             <button type="submit" class="btn btn-primary mt-2">Simpan Jawaban</button>
-=======
-                                            <textarea name="jawaban" id="<?= 'jawaban' . $key ?>" cols="80" rows="80">
-                                                <?php
-                                                if (in_array($value['kd_soal'], $kd_soal_jawaban_mahasiswa)) {
-                                                    $value2 = array_filter($jawaban_mahasiswa, function ($item) use ($value) {
-                                                        return $item['kd_soal'] == $value['kd_soal'];
-                                                    });
-                                                    $value2 = reset($value2);
-                                                    echo $value2['jawaban'];
-                                                } else {
-                                                    echo '';
-                                                }
-                                                ?>
-                                            </textarea>
-                                            <button type="submit" class="btn btn-primary mt-2">Simpan Jawaban </button>
->>>>>>> 9afeab2c1063a7e801076d5e2b383b7d878f9b59
                                         </form>
                                         <script>
                                             CKEDITOR.replace("<?= 'jawaban' . $key ?>");
