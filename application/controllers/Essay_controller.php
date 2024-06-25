@@ -185,10 +185,10 @@ class Essay_Controller extends Essay
             $remove_breakline_kj = str_replace(PHP_EOL, ' ', $this->input->post('kunci_jawaban'));
             $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
             $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
-            // echo '<pre>';
-            // print_r($nilai);
-            // echo '</pre>';
-            // die();
+            echo '<pre>';
+            print_r($nilai);
+            echo '</pre>';
+            die();
             $isAnswerSaved = $this->essay_model->show_data(column: 'jawaban', table: 'cbt_jawaban', param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
             if (count($isAnswerSaved) == 0) {
                 $jawaban_saved = $this->essay_model->add_data(table: 'cbt_jawaban', data: $this->jawaban_essay);
@@ -215,14 +215,14 @@ class Essay_Controller extends Essay
         $array_answer = explode(" ", $preprocessed_answer);
         $array_key_answer = explode(" ", $preprocessed_key_answer);
         $array = [];
-        if (count($array_answer) > count($array_key_answer)) {
-            for ($i = 0; $i < count($array_answer); $i++) {
-                if (in_array($array_answer[$i], $array_key_answer)) {
-                    array_push($array, $array_answer[$i]);
-                }
+        for ($i = 0; $i < count($array_answer); $i++) {
+            if (in_array($array_answer[$i], $array_key_answer)) {
+                array_push($array, $array_answer[$i]);
             }
-            $preprocessed_answer = implode(" ", ($array));
         }
+        $preprocessed_answer = implode(" ", ($array));
+        // if (count($array_answer) > count($array_key_answer)) {
+        // }
         $tokenized_answer = $this->tokenization($preprocessed_answer, 4);
         $tokenized_key_answer = $this->tokenization($preprocessed_key_answer, 4);
         $hashing_answer = $this->rolling_hash($tokenized_answer, 3);
@@ -245,6 +245,7 @@ class Essay_Controller extends Essay
         }
         $final_score = ($score / $max_score) * $bobot;
         return array(
+            'jawaban' => $jawaban,
             'preprocessed_answer' => $preprocessed_answer,
             'preprocessed_key_answer' => $preprocessed_key_answer,
             'tokenized_answer' => $tokenized_answer,
@@ -299,16 +300,23 @@ class Essay_Controller extends Essay
 
     private function tokenization(string $kalimat, int $n): array
     {
+        $tokenSize = $n;
+        if (strlen($kalimat) == 0) {
+            return array();
+        }
+        if (strlen($kalimat) < $n) {
+            $tokenSize = strlen($kalimat);
+        }
         $whitespace_removal = str_replace(" ", "", $kalimat);
         $n_grams = $n_gram = [];
         for ($i = 0; $i < strlen($whitespace_removal); $i++) {
             array_push($n_gram, $whitespace_removal[$i]);
             array_push($n_grams, implode($n_gram));
-            if ($i >= ($n - 1)) {
+            if ($i >= ($tokenSize - 1)) {
                 array_shift($n_gram);
             }
         }
-        while (--$n) {
+        while (--$tokenSize) {
             array_shift($n_grams);
         }
         return $n_grams;
@@ -317,6 +325,9 @@ class Essay_Controller extends Essay
     private function rolling_hash(array $pattern, int $windowSize, int $base = 26, int $mod = 1000000007): array
     {
         $n = sizeof($pattern);
+        if ($n == 0) {
+            return array(0);
+        }
         // Array untuk menyimpan hasil pangkat base modulo mod
         $power = array_fill(0, $n + 1, 1);
         // Array untuk menyimpan nilai hash dari setiap window substring
