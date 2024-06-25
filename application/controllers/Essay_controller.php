@@ -46,7 +46,7 @@ class Essay_Controller extends Essay
                         redirect('/');
                     } else {
                         $this->session->set_userdata(['npm' => $getData['npm'], 'kd_kelas' => $getData['kd_kelas'], 'kd_progstudi' => $getData['kd_progstudi']]);
-                        redirect('essay_scoring_view');
+                        redirect('dashboard_home_mahasiswa');
                     }
                 }
             } else {
@@ -123,20 +123,20 @@ class Essay_Controller extends Essay
                 $this->session->set_flashdata('success', '<div class="alert alert-success" role="alert">
         			Data Berhasil Ditambah
         			</div>');
-                redirect(base_url(($this->soal_matakuliah['ctype'] == 3 ? 'soal_view_uts/' : 'soal_view_uas/')
+                redirect(base_url(($this->soal_matakuliah['ctype'] == 3 ? 'input_soal_esai_uts/' : 'input_soal_esai_uas/')
                     . $this->input->post('kd_progstudi') . '/' . $this->session->userdata('kd_matkul')
                     . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('semester') . '/'
                     . $this->input->post('ctype')));
             }
         } else {
-            redirect(base_url(($this->soal_matakuliah['ctype'] == 3 ? 'soal_view_uts' : 'soal_view_uas')
+            redirect(base_url(($this->soal_matakuliah['ctype'] == 3 ? 'input_soal_esai_uts' : 'input_soal_esai_uas')
                 . '/' . $this->input->post('kd_progstudi') . '/' . $this->session->userdata('kd_matkul')
                 . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('semester') . '/'
                 . $this->input->post('ctype')));
         }
     }
 
-    public function update_status_soal_uts($kd_progstudi, $kd_matkul, $kd_kelas, $semester, $ctype, $kd_soal, $aktif)
+    public function update_status_soal($kd_progstudi, $kd_matkul, $kd_kelas, $semester, $ctype, $kd_soal, $aktif)
     {
         $updateParam = [
             'kd_soal' => $kd_soal,
@@ -147,7 +147,7 @@ class Essay_Controller extends Essay
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
                 Status Soal Berhasil Diubah!
             </div>');
-            redirect(base_url('soal_view_uts/' . $kd_progstudi . '/' . $kd_matkul
+            redirect(base_url($ctype === 3 ? 'input_soal_esai_uts/' : 'input_soal_esai_uas/' . $kd_progstudi . '/' . $kd_matkul
                 . '/' . $kd_kelas . '/' . $semester . '/'
                 . $ctype));
         }
@@ -199,11 +199,11 @@ class Essay_Controller extends Essay
                 $this->session->set_userdata('success', '<div class="alert alert-success" role="alert">
                 Jawaban Berhasil Disimpan!
                 </div>');
-                redirect(base_url('essay_scoring_view_detail' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
+                redirect(base_url('menjawab_soal_esai' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
                     . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
             }
         } else {
-            redirect(base_url('essay_scoring_view_detail' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
+            redirect(base_url('menjawab_soal_esai' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
                 . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
         }
     }
@@ -215,14 +215,14 @@ class Essay_Controller extends Essay
         $array_answer = explode(" ", $preprocessed_answer);
         $array_key_answer = explode(" ", $preprocessed_key_answer);
         $array = [];
-        if (count($array_answer) > count($array_key_answer)) {
-            for ($i = 0; $i < count($array_answer); $i++) {
-                if (in_array($array_answer[$i], $array_key_answer)) {
-                    array_push($array, $array_answer[$i]);
-                }
+        for ($i = 0; $i < count($array_answer); $i++) {
+            if (in_array($array_answer[$i], $array_key_answer)) {
+                array_push($array, $array_answer[$i]);
             }
-            $preprocessed_answer = implode(" ", ($array));
         }
+        $preprocessed_answer = implode(" ", ($array));
+        // if (count($array_answer) > count($array_key_answer)) {
+        // }
         $tokenized_answer = $this->tokenization($preprocessed_answer, 4);
         $tokenized_key_answer = $this->tokenization($preprocessed_key_answer, 4);
         $hashing_answer = $this->rolling_hash($tokenized_answer, 3);
@@ -245,6 +245,7 @@ class Essay_Controller extends Essay
         }
         $final_score = ($score / $max_score) * $bobot;
         return array(
+            'jawaban' => $jawaban,
             'preprocessed_answer' => $preprocessed_answer,
             'preprocessed_key_answer' => $preprocessed_key_answer,
             'tokenized_answer' => $tokenized_answer,
@@ -265,48 +266,55 @@ class Essay_Controller extends Essay
         return ($output[0]);
     }
 
-    private function get_sinonim(string $keyword_jawaban, string $keyword_kunci_jawaban)
-    {
-        $dict_json = file_get_contents(APPPATH . 'controllers/dict.json');
-        $dict_data = json_decode($dict_json);
-        $array_kunci_jawaban = explode(" ", $keyword_kunci_jawaban);
-        if (property_exists($dict_data, $keyword_jawaban)) {
-            for ($i = 0; $i < count($dict_data->$keyword_jawaban->sinonim); $i++) {
-                if (in_array($dict_data->$keyword_jawaban->sinonim[$i], $array_kunci_jawaban)) {
-                    return $dict_data->$keyword_jawaban->sinonim[$i];
-                }
-            }
-        } else {
-            return null;
-        }
-    }
-    private function sinonim_checker(string $jawaban, string $kunci_jawaban)
-    {
-        $array_jawaban = explode(" ", $jawaban);
-        $results = [];
-        for ($i = 0; $i < count($array_jawaban); $i++) {
-            $sinonim_keyword = $this->get_sinonim($array_jawaban[$i], $kunci_jawaban);
-            if (is_null($sinonim_keyword)) {
-                array_push($results, $array_jawaban[$i]);
-            } else {
-                array_push($results, $sinonim_keyword);
-            }
-        }
-        return implode(" ", $results);
-    }
+    // private function get_sinonim(string $keyword_jawaban, string $keyword_kunci_jawaban)
+    // {
+    //     $dict_json = file_get_contents(APPPATH . 'controllers/dict.json');
+    //     $dict_data = json_decode($dict_json);
+    //     $array_kunci_jawaban = explode(" ", $keyword_kunci_jawaban);
+    //     if (property_exists($dict_data, $keyword_jawaban)) {
+    //         for ($i = 0; $i < count($dict_data->$keyword_jawaban->sinonim); $i++) {
+    //             if (in_array($dict_data->$keyword_jawaban->sinonim[$i], $array_kunci_jawaban)) {
+    //                 return $dict_data->$keyword_jawaban->sinonim[$i];
+    //             }
+    //         }
+    //     } else {
+    //         return null;
+    //     }
+    // }
+    // private function sinonim_checker(string $jawaban, string $kunci_jawaban)
+    // {
+    //     $array_jawaban = explode(" ", $jawaban);
+    //     $results = [];
+    //     for ($i = 0; $i < count($array_jawaban); $i++) {
+    //         $sinonim_keyword = $this->get_sinonim($array_jawaban[$i], $kunci_jawaban);
+    //         if (is_null($sinonim_keyword)) {
+    //             array_push($results, $array_jawaban[$i]);
+    //         } else {
+    //             array_push($results, $sinonim_keyword);
+    //         }
+    //     }
+    //     return implode(" ", $results);
+    // }
 
     private function tokenization(string $kalimat, int $n): array
     {
+        $tokenSize = $n;
+        if (strlen($kalimat) == 0) {
+            return array();
+        }
+        if (strlen($kalimat) < $n) {
+            $tokenSize = strlen($kalimat);
+        }
         $whitespace_removal = str_replace(" ", "", $kalimat);
         $n_grams = $n_gram = [];
         for ($i = 0; $i < strlen($whitespace_removal); $i++) {
             array_push($n_gram, $whitespace_removal[$i]);
             array_push($n_grams, implode($n_gram));
-            if ($i >= ($n - 1)) {
+            if ($i >= ($tokenSize - 1)) {
                 array_shift($n_gram);
             }
         }
-        while (--$n) {
+        while (--$tokenSize) {
             array_shift($n_grams);
         }
         return $n_grams;
@@ -315,6 +323,9 @@ class Essay_Controller extends Essay
     private function rolling_hash(array $pattern, int $windowSize, int $base = 26, int $mod = 1000000007): array
     {
         $n = sizeof($pattern);
+        if ($n == 0) {
+            return array(0);
+        }
         // Array untuk menyimpan hasil pangkat base modulo mod
         $power = array_fill(0, $n + 1, 1);
         // Array untuk menyimpan nilai hash dari setiap window substring

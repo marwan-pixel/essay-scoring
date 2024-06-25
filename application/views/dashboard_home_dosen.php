@@ -47,12 +47,12 @@
                         <th><?= $value['kd_kelas'] ?></th>
                         <th><?= $value['kd_matkul'] ?></th>
                         <th>
-                            <a href="<?= base_url('soal_view_uts/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 3); ?>" class="btn btn-outline-secondary">Input Soal</a>
-                            <a href="<?= base_url('jawaban_mahasiswa_view_uts/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 3); ?>" class="btn btn-outline-secondary">Jawaban Soal</a>
+                            <a href="<?= base_url('input_soal_esai_uts/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 3); ?>" class="btn btn-outline-secondary">Input Soal</a>
+                            <a href="<?= base_url('melihat_jawaban_esai_dan_nilai_uts/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 3); ?>" class="btn btn-outline-secondary">Jawaban Soal</a>
                         </th>
                         <th>
-                            <a href="<?= base_url('soal_view_uas/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 4); ?>" class="btn btn-outline-secondary">Input Soal</a>
-                            <a href="<?= base_url('jawaban_mahasiswa_view_uas/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 4); ?> " class="btn btn-outline-secondary">Jawaban Soal</a>
+                            <a href="<?= base_url('input_soal_esai_uts/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 4); ?>" class="btn btn-outline-secondary">Input Soal</a>
+                            <a href="<?= base_url('melihat_jawaban_esai_dan_nilai_uas/' . $value['kd_progstudi'] . '/' . $value['kd_matkul'] . '/' . $value['kd_kelas'] . '/' . $value['semester'] . '/' . 4); ?> " class="btn btn-outline-secondary">Jawaban Soal</a>
                         </th>
                     </tr>
                 <?php
