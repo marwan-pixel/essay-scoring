@@ -41,7 +41,7 @@ if (is_null($this->session->userdata('nip'))) {
                                     </div>
                                 </div>
                                 <br>
-                                <b>Nilai: <?= $total_skor / count($total_soal); ?> </b>
+                                <b>Nilai: <?= $total_skor / count($total_soal) ?> </b>
                             <?php
                             }
                             ?>
