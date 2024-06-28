@@ -53,7 +53,7 @@ if (!is_null($soal_matakuliah)) :
                                                     $value2 = reset($value2);
                                                     echo $value2['jawaban'];
                                                 } else {
-                                                    echo '';
+                                                    echo "";
                                                 }
                                                 ?>
                                             </textarea>
