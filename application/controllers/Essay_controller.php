@@ -121,7 +121,7 @@ class Essay_Controller extends Essay
             $soal_saved = $this->essay_model->add_data(table: 'cbt_soal', data: $this->soal_matakuliah);
             if ($soal_saved) {
                 $this->session->set_flashdata('success', '<div class="alert alert-success" role="alert">
-        			Data Berhasil Ditambah
+        			Data Berhasil Disimpan
         			</div>');
                 redirect(base_url(($this->soal_matakuliah['ctype'] == 3 ? 'input_soal_esai_uts/' : 'input_soal_esai_uas/')
                     . $this->input->post('kd_progstudi') . '/' . $this->session->userdata('kd_matkul')

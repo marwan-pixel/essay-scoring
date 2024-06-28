@@ -30,6 +30,7 @@ if (!is_null($soal_matakuliah)) :
                                 <div class="card">
                                     <div class="card-header">
                                         <?= $value['soal'] ?>
+
                                     </div>
                                     <div class="card-body">
                                         <form class="simpan-data-jawaban" action="<?= base_url('simpan_jawaban_esai') ?>" method="post">
@@ -44,7 +45,7 @@ if (!is_null($soal_matakuliah)) :
                                             <input type="hidden" name="ctype" value="<?= $value['ctype']; ?>">
                                             <input type="hidden" name="kunci_jawaban" value="<?= $value['kunci_jawaban']; ?>">
                                             <label for="jawaban" class="form-label">Silakan Masukkan Jawaban di bawah</label>
-                                            <textarea name="jawaban" id="<?= 'jawaban' . $key ?>" cols="80"><?= $jawaban_mahasiswa[$key - 1]->jawaban ?? '' ?></textarea>
+                                            <textarea name="jawaban" id="<?= 'jawaban' . $key ?>" cols="80"><? print_r($jawaban_mahasiswa[$key - 1]) ?></textarea>
                                             <button type="submit" class="btn btn-primary mt-2">Simpan Jawaban</button>
                                         </form>
                                         <script>
