@@ -90,6 +90,22 @@ echo $this->session->flashdata('message'); ?>
     <script>
       CKEDITOR.replace('soal');
       CKEDITOR.replace('kunci_jawaban');
+
+      const table = document.querySelector('table');
+      table.addEventListener('click', function(event) {
+        const cell = event.target;
+        if (cell.tagName === 'TD') {
+          const row = cell.parentNode; // Get the current row
+          const name = row.querySelector('td:first-child').textContent; // Get the name
+          const email = row.querySelector('td:nth-child(2)').textContent; // Get the email
+          const phone = row.querySelector('td:last-child').textContent; // Get the phone number
+
+          // Set the values in the form inputs
+          document.getElementById('name').value = name;
+          document.getElementById('email').value = email;
+          document.getElementById('phone').value = phone;
+        }
+      });
     </script>
   </div>
 </form>
