@@ -3,6 +3,7 @@ import torch
 from sentence_transformers import SentenceTransformer, util
 from deep_translator import GoogleTranslator
 from mpstemmer import MPStemmer
+import json
 
 model = SentenceTransformer("all-MiniLM-L6-v2")
 
