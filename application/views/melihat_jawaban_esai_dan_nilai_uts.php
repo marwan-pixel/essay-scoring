@@ -1,9 +1,11 @@
 <?php
+
 if (is_null($this->session->userdata('nip'))) {
     redirect('/login');
 }
 // var_dump($mahasiswa);
 // die();
+$total_skor = 0;
 ?>
 <a href="<?= base_url('/'); ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
 <h5 class="card-subtitle text-muted mb-3">Kode Matkul: <?= $kd_matkul; ?></h5>
@@ -24,7 +26,6 @@ if (is_null($this->session->userdata('nip'))) {
                     <td></td>
                     <td colspan="2">
                         <?php
-                        $total_skor = 0;
                         foreach ($jawaban_mahasiswa as $key => $value_2) :
                             if ($value_2['npm'] == $value_1->npm) {
                                 $total_skor += $value_2['hasil_nilai'];
@@ -41,14 +42,13 @@ if (is_null($this->session->userdata('nip'))) {
                                     </div>
                                 </div>
                                 <br>
-                                <b>Nilai: <?= $total_skor / count($total_soal) ?> </b>
                             <?php
                             }
                             ?>
-
                         <?php endforeach; ?>
-                    </td>
+                        <b>Nilai: <?= $total_skor / count($total_soal); ?> </b>
                 </tr>
+                </td>
         <?php
             }
         }
