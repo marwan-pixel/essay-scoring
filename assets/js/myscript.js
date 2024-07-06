@@ -71,3 +71,22 @@ $('.logout').on('click', function(e) {
         }
     });
 });
+
+$('.back-button').on('click', function(e) {
+    e.preventDefault();
+    const href = $(this).attr('href');
+    Swal.fire({
+        title: 'Konfirmasi',
+        text: " Apakah anda yakin ingin mengakhiri ujian ini?",
+        icon: 'warning',
+        showCancelButton: true,
+        cancelButtonText: 'Tidak',
+        confirmButtonColor: 'blue',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Iya'
+    }).then((result) => {
+        if(result.value) {
+            document.location.href = href;
+        }
+    })
+});

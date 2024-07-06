@@ -2,7 +2,7 @@
 if (!is_null($this->session->userdata('nip'))) {
     redirect('/');
 } else if (!is_null($this->session->userdata('npm'))) {
-    redirect('essay_scoring_view');
+    redirect('dashboard_home_mahasiswa');
 }
 ?>
 <div class="login">

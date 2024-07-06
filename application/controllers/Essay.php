@@ -116,6 +116,7 @@ class Essay extends CI_Controller
             ->from('cbt_jawaban')
             ->join('cbt_soal', 'cbt_jawaban.kd_soal = cbt_soal.kd_soal')
             ->where([
+                'cbt_soal.aktif' => 1,
                 'cbt_soal.ctype' => $ctype,
                 'cbt_soal.kd_matkul' => $kd_matkul,
                 'cbt_soal.kd_kelas' => $kd_kelas,
@@ -174,6 +175,14 @@ class Essay extends CI_Controller
             item_desc: 'semester'
         );
         $daftar_mata_kuliah = [];
+        if (!is_null($this->session->userdata('thn_akademik')) && !is_null($this->session->userdata('semester'))) {
+            $data_matkul = [
+                'thn_akademik' => $this->session->userdata('thn_akademik'),
+                'kd_kelas' => $this->session->userdata('kd_kelas'),
+                'semester' => $this->session->userdata('semester'),
+            ];
+            $daftar_mata_kuliah = $this->essay_model->show_data('kd_matkul', 'cbt_soal', $data_matkul);
+        }
         if ($this->input->post('thn_akademik') || $this->input->post('semester')) {
             $this->session->set_userdata(['semester' => $this->input->post('semester'), 'thn_akademik' => $this->input->post('thn_akademik')]);
             $data_matkul = [

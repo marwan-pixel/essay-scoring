@@ -5,39 +5,47 @@ if (is_null($this->session->userdata('npm'))) {
 ?>
 <div class="container">
     <div class="row align-items-center">
-        <div class="col-6">
-            <form action="<?= base_url('dashboard_home_mahasiswa') ?>" class="d-flex gap-3 align-items-center" method="post" id="form">
-                <div class="input-group">
-                    <label class="input-group-text" for="inputGroupSelect01">Tahun Akademik</label>
-                    <select class="form-select" name="thn_akademik" id="thn_akademik" onchange="document.getElementById('form').submit();">
-                        <option selected><?= $this->session->userdata('thn_akademik') ?? "Choose..." ?></option>
-                        <?php
-                        foreach ($thn_akademik as $key => $value) {
-                        ?>
-                            <option value="<?= $value->thn_akademik; ?>"><?= $value->thn_akademik; ?></option>
-                        <?php
-                        } ?>
-                    </select>
-                </div>
-                <div class="input-group">
-                    <label class="input-group-text" for="inputGroupSelect01">Semester</label>
-                    <select class="form-select" name="semester" id="semester" onchange="document.getElementById('form').submit();">
-                        <option selected><?= $this->session->userdata('semester') ?? "Choose..." ?></option>
-                        <?php
-                        foreach ($data_semester as $key => $value) {
-                        ?>
-                            <option value="<?= $value->semester; ?>"><?= $value->semester; ?></option>
-                        <?php
-                        }
-                        ?>
+        <div class="col-lg-6">
+            <form action="<?= base_url('dashboard_home_mahasiswa') ?>" method="post" id="form">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="input-group">
+                            <label class="input-group-text" for="inputGroupSelect01">Tahun Akademik</label>
+                            <select class="form-select" name="thn_akademik" id="thn_akademik" onchange="document.getElementById('form').submit();">
+                                <option selected><?= $this->session->userdata('thn_akademik') ?? "Choose..." ?></option>
+                                <?php
+                                foreach ($thn_akademik as $key => $value) {
+                                ?>
+                                    <option value="<?= $value->thn_akademik; ?>"><?= $value->thn_akademik; ?></option>
+                                <?php
+                                } ?>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="input-group mt-3 mt-md-0">
+                            <label class="input-group-text" for="inputGroupSelect01">Semester</label>
+                            <select class="form-select" name="semester" id="semester" onchange="document.getElementById('form').submit();">
+                                <option selected><?= $this->session->userdata('semester') ?? "Choose..." ?></option>
+                                <?php
+                                foreach ($data_semester as $key => $value) {
+                                ?>
+                                    <option value="<?= $value->semester; ?>"><?= $value->semester; ?></option>
+                                <?php
+                                }
+                                ?>
 
-                    </select>
+                            </select>
+                        </div>
+                    </div>
                 </div>
             </form>
         </div>
-        <div class="col-6 d-flex justify-content-end align-items-center gap-4">
-            <p class="py-2 border px-4 mt-3 rounded">NPM: <?= $this->session->userdata('npm'); ?></p>
-            <a href="<?= base_url('logout'); ?>" class="btn btn-outline-secondary logout">Logout</a>
+        <div class="col-lg-6">
+            <div class="d-grid d-md-flex gap-2 align-items-md-center justify-content-md-end">
+                <p class="py-2 border px-4 mt-3 rounded">NPM: <?= $this->session->userdata('npm'); ?></p>
+                <a href="<?= base_url('logout'); ?>" class="btn btn-outline-secondary logout">Logout</a>
+            </div>
         </div>
     </div>
 </div>

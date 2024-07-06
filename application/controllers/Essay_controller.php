@@ -66,6 +66,7 @@ class Essay_Controller extends Essay
         $this->session->unset_userdata('npm');
         $this->session->unset_userdata('kd_soal');
         $this->session->unset_userdata('kd_matkul');
+        $this->session->unset_userdata('semester');
         $this->session->unset_userdata('thn_akademik');
         redirect('/');
     }
@@ -83,7 +84,7 @@ class Essay_Controller extends Essay
             'kunci_jawaban' => $this->input->post('kunci_jawaban'),
             'thn_akademik' => $this->session->userdata('thn_akademik'),
             'nip' => $this->session->userdata('nip'),
-            'aktif' => 1,
+            'aktif' => $this->input->post('aktif'),
             'dentry' => date('Y-m-d h:m:s')
         );
         $dataValidation = array(
@@ -116,9 +117,17 @@ class Essay_Controller extends Essay
             ),
         );
         $this->form_validation->set_rules($dataValidation);
-
         if ($this->form_validation->run() === true) {
-            $soal_saved = $this->essay_model->add_data(table: 'cbt_soal', data: $this->soal_matakuliah);
+            $isAnswerSaved = $this->essay_model->show_data(column: 'soal', table: 'cbt_soal', param: ['kd_soal' => $this->input->post('kd_soal')]);
+            // var_dump(count($isAnswerSaved));
+            // die();
+            if (count($isAnswerSaved) == 0) {
+                $soal_saved = $this->essay_model->add_data(table: 'cbt_soal', data: $this->soal_matakuliah);
+            } else {
+                unset($this->soal_matakuliah['dentry']);
+                $this->soal_matakuliah['dupdate'] = date('Y-m-d h:m:s');
+                $soal_saved = $this->essay_model->update_data(table: 'cbt_soal', data: $this->soal_matakuliah, param: ['kd_soal' => $this->input->post('kd_soal')]);
+            }
             if ($soal_saved) {
                 $this->session->set_flashdata('success', '<div class="alert alert-success" role="alert">
         			Data Berhasil Disimpan
@@ -129,6 +138,9 @@ class Essay_Controller extends Essay
                     . $this->input->post('ctype')));
             }
         } else {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+        			Data Tidak boleh ada yang kosong
+        			</div>');
             redirect(base_url(($this->soal_matakuliah['ctype'] == 3 ? 'input_soal_esai_uts' : 'input_soal_esai_uas')
                 . '/' . $this->input->post('kd_progstudi') . '/' . $this->session->userdata('kd_matkul')
                 . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('semester') . '/'
@@ -147,7 +159,7 @@ class Essay_Controller extends Essay
             $this->session->set_flashdata('message', '<div class="alert alert-success" role="alert">
                 Status Soal Berhasil Diubah!
             </div>');
-            redirect(base_url($ctype === 3 ? 'input_soal_esai_uts/' : 'input_soal_esai_uas/' . $kd_progstudi . '/' . $kd_matkul
+            redirect(base_url($ctype === 3 ? 'input_soal_esai_uas/' : 'input_soal_esai_uts/' . $kd_progstudi . '/' . $kd_matkul
                 . '/' . $kd_kelas . '/' . $semester . '/'
                 . $ctype));
         }
@@ -185,31 +197,46 @@ class Essay_Controller extends Essay
             $remove_breakline_kj = $this->input->post('kunci_jawaban');
             $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, max_score: 5, bobot: $this->input->post('bobot_soal'));
             // echo '<pre>';
-            // var_dump($nilai);
+
             // echo '</pre>';
             // die();
             $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
+            unset($nilai['hasil_nilai']);
             $isAnswerSaved = $this->essay_model->show_data(column: 'jawaban', table: 'cbt_jawaban', param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
+            // var_dump(($isAnswerSaved)[0]);
+            // die();
             if (count($isAnswerSaved) == 0) {
                 $jawaban_saved = $this->essay_model->add_data(table: 'cbt_jawaban', data: $this->jawaban_essay);
             } else {
                 $jawaban_saved = $this->essay_model->update_data(table: 'cbt_jawaban', data: $this->jawaban_essay, param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
             }
-            if ($jawaban_saved) {
-                $this->session->set_userdata('success', '<div class="alert alert-success" role="alert">
+
+            $kd_jawaban = $this->essay_model->show_data(column: 'kd_jawaban', table: 'cbt_jawaban', param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
+            $hasil_algoritma_get = $this->essay_model->show_data(column: '*', table: 'cbt_perhitungan_algoritma', param: ['kd_jawaban' => $kd_jawaban[0]['kd_jawaban']]);
+            if (count($hasil_algoritma_get) == 0) {
+                $nilai['kd_jawaban'] = $kd_jawaban[0]['kd_jawaban'];
+                $hasil_algoritma_saved = $this->essay_model->add_data(table: 'cbt_perhitungan_algoritma', data: $nilai);
+            } else {
+                $hasil_algoritma_saved = $this->essay_model->update_data(table: 'cbt_perhitungan_algoritma', data: $nilai, param: ['kd_jawaban' => $isAnswerSaved[0]['kd_jawaban']]);
+            }
+            if ($jawaban_saved && $hasil_algoritma_saved) {
+                $this->session->set_flashdata('success', '<div class="alert alert-success" role="alert">
                 Jawaban Berhasil Disimpan!
                 </div>');
                 redirect(base_url('menjawab_soal_esai' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
                     . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
             }
         } else {
+            $this->session->set_flashdata('message', '<div class="alert alert-danger" role="alert">
+                Data Tidak boleh ada yang kosong
+                </div>');
             redirect(base_url('menjawab_soal_esai' . '/' . $this->input->post('kd_matkul') . '/' . $this->input->post('semester')
                 . '/' . $this->input->post('kd_kelas') . '/' . $this->input->post('ctype')));
         }
     }
     public function essay_scoring(string $jawaban, string $kunci_jawaban, int $max_score, int $bobot)
     {
-        $similarity = $this->text_preprocessing($jawaban, $kunci_jawaban);
+        $process = $this->text_preprocessing($jawaban, $kunci_jawaban);
         // $preprocessed_key_answer_ = $this->text_preprocessing($kunci_jawaban);
         // $array_answer = explode(" ", $preprocessed_answer_);
         // $array_key_answer = explode(" ", $preprocessed_key_answer_);
@@ -230,8 +257,8 @@ class Essay_Controller extends Essay
         // $hashing_key_answer = $this->rolling_hash($tokenized_key_answer, 3);
         // $winnowing_answer = $this->winnowing($hashing_answer, 4);
         // $winnowing_key_answer = $this->winnowing($hashing_key_answer, 4);
-        // $similarity = $this->cosine_similarity(kunci_jawaban: $winnowing_key_answer, jawaban: $winnowing_answer);
-        if ($similarity === 0) {
+        $similarity = $process->similarity;
+        if ($similarity <= 0) {
             $score = 0;
         } else {
             $score = -1;
@@ -246,34 +273,56 @@ class Essay_Controller extends Essay
         }
         $final_score = ($score / $max_score) * $bobot;
         return array(
-            // 'bobot' => $bobot,
-            // 'jawaban' => $jawaban,
-            // 'kunci_jawaban' => $kunci_jawaban,
-            // 'preprocessed_answer' => $preprocessed_answer,
-            // 'preprocessed_key_answer' => $preprocessed_key_answer,
+            'jawaban_mahasiswa' => $process->jawaban,
+            'kunci_jawaban' => $process->kunci_jawaban,
             // 'tokenized_answer' => $tokenized_answer,
             // 'tokenized_key_answer' => $tokenized_key_answer,
-            // 'hashing_answer' => $hashing_answer,
-            // 'hashing_key_answer' => $hashing_key_answer,
-            // 'winnowing_answer' => $winnowing_answer,
-            // 'winnowing_key_answer' => $winnowing_key_answer,
+            'winnowing_jawaban' => json_encode($process->winnowing_jawaban_essay),
+            'winnowing_kunci_jawaban' => json_encode($process->winnowing_kunci_jawaban),
+            'dot_product' => $process->dot_product,
+            'magnitude_esai' => $process->magnitude_esai,
+            'magnitude_kunci_jawaban' => $process->magnitude_kj,
             'similarity' => $similarity,
-            'hasil_nilai' => $final_score
+            'hasil_nilai' => (int)$final_score
         );
+        return $process;
     }
 
     private function text_preprocessing(string $jawaban, string $kunci_jawaban)
     {
-        $decoded_string_jawaban = strip_tags($jawaban);
-        $decoded_string_kunci_jawaban = strip_tags($kunci_jawaban);
+        $preprocessing_jawaban = strip_tags($jawaban);
+        $preprocessing_kunci_jawaban = strip_tags($kunci_jawaban);
 
-        $cleaned_string_jawaban = preg_replace('/\s+/', ' ', $decoded_string_jawaban);
-        $cleaned_string_kunci_jawaban = preg_replace('/\s+/', ' ', $decoded_string_kunci_jawaban);
+        $preprocessing_jawaban = html_entity_decode($preprocessing_jawaban);
+        $preprocessing_kunci_jawaban = html_entity_decode($preprocessing_kunci_jawaban);
 
-        $case_folding_jawaban = trim($cleaned_string_jawaban);
-        $case_folding_kunci_jawaban = trim($cleaned_string_kunci_jawaban);
-        exec('python ' . APPPATH . 'controllers/python/essay.py ' . escapeshellarg($case_folding_jawaban) . " " . escapeshellarg($case_folding_kunci_jawaban), $output);
-        return ($output[0]);
+        $preprocessing_jawaban = preg_replace('/[^\w\s]/u', '', $preprocessing_jawaban);
+        $preprocessing_kunci_jawaban = preg_replace('/[^\w\s]/u', '', $preprocessing_kunci_jawaban);
+
+        $preprocessing_jawaban = preg_replace('/\s+/', ' ', $preprocessing_jawaban);
+        $preprocessing_kunci_jawaban = preg_replace('/\s+/', ' ', $preprocessing_kunci_jawaban);
+
+        $preprocessing_jawaban = trim($preprocessing_jawaban);
+        $preprocessing_kunci_jawaban = trim($preprocessing_kunci_jawaban);
+
+        $data = array(
+            'jawaban_esai' => $preprocessing_jawaban,
+            'kunci_jawaban_esai' => $preprocessing_kunci_jawaban
+        );
+
+        $json_data = json_encode($data);
+
+        $url = 'http://localhost:5000/';
+
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_HTTPHEADER, array('Content-Type: application/json'));
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $json_data);
+
+        $response = curl_exec($ch);
+        curl_close($ch);
+        return json_decode($response);
     }
 
     // private function tokenization(string $kalimat, int $n): array
@@ -348,28 +397,28 @@ class Essay_Controller extends Essay
     // private function cosine_similarity(array $kunci_jawaban, array $jawaban)
     // {
     //     // Calculate dot product 
-    //     $length = max(count($kunci_jawaban), count($jawaban));
-    //     $kunci_jawaban = array_pad($kunci_jawaban, $length, 0);
-    //     $jawaban = array_pad($jawaban, $length, 0);
+    // $length = max(count($kunci_jawaban), count($jawaban));
+    // $kunci_jawaban = array_pad($kunci_jawaban, $length, 0);
+    // $jawaban = array_pad($jawaban, $length, 0);
 
-    //     $intersection = (array_intersect($jawaban, $kunci_jawaban));
-    //     if (count($intersection) === 0) {
-    //         $similarity = 0;
-    //     } else {
-    //         $dotProduct = 0;
-    //         for ($i = 0; $i < $length; $i++) {
-    //             $dotProduct += $kunci_jawaban[$i] * $jawaban[$i];
-    //         }
-    //         // Calculate magnitudes
-    //         $magnitude1 = sqrt(array_sum(array_map(function ($x) {
-    //             return $x * $x;
-    //         }, $kunci_jawaban)));
-    //         $magnitude2 = sqrt(array_sum(array_map(function ($y) {
-    //             return $y * $y;
-    //         }, $jawaban)));
-    //         // Calculate cosine similarity
-    //         $similarity = $dotProduct / ($magnitude1 * $magnitude2);
+    // $intersection = (array_intersect($jawaban, $kunci_jawaban));
+    // if (count($intersection) === 0) {
+    //     $similarity = 0;
+    // } else {
+    //     $dotProduct = 0;
+    //     for ($i = 0; $i < $length; $i++) {
+    //         $dotProduct += $kunci_jawaban[$i] * $jawaban[$i];
     //     }
-    //     return $similarity;
+    //     // Calculate magnitudes
+    //     $magnitude1 = sqrt(array_sum(array_map(function ($x) {
+    //         return $x * $x;
+    //     }, $kunci_jawaban)));
+    //     $magnitude2 = sqrt(array_sum(array_map(function ($y) {
+    //         return $y * $y;
+    //     }, $jawaban)));
+    //     // Calculate cosine similarity
+    //     $similarity = $dotProduct / ($magnitude1 * $magnitude2);
+    // }
+    // return $similarity;
     // }
 }

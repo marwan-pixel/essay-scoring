@@ -2,12 +2,14 @@
 if (is_null($this->session->userdata('npm'))) {
     redirect('/login');
 }
+echo $this->session->flashdata('message');
 ?>
 <div class="container">
-    <a href="<?= base_url('dashboard_home_mahasiswa') ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
+    <a href="<?= base_url('dashboard_home_mahasiswa') ?>" class="btn btn-primary mb-3 back-button"> <i class="bi bi-arrow-left"></i></a>
     <h4>Mata Kuliah: <?= $kd_matkul ?></h4>
 </div>
 <?php
+
 if (!is_null($soal_matakuliah)) :
 ?>
     <div class="container">
@@ -15,7 +17,7 @@ if (!is_null($soal_matakuliah)) :
             <tbody class="table-group-divider">
                 <?= form_error('name', '<small class="text-danger pl-3">', '</small>'); ?>
                 <?php
-                echo $this->session->userdata('success');
+                echo $this->session->flashdata('success');
                 if (count($soal_matakuliah) > 0) :
                     $kd_soal_jawaban_mahasiswa = array_column($jawaban_mahasiswa, 'kd_soal');
                     foreach ($soal_matakuliah as $key => $value) :
@@ -30,7 +32,6 @@ if (!is_null($soal_matakuliah)) :
                                 <div class="card">
                                     <div class="card-header">
                                         <?= $value['soal'] ?>
-
                                     </div>
                                     <div class="card-body">
                                         <form class="simpan-data-jawaban" action="<?= base_url('simpan_jawaban_esai') ?>" method="post">
