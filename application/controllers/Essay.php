@@ -112,7 +112,7 @@ class Essay extends CI_Controller
             table: 'cbt_soal',
             param: ['kd_matkul' => $kd_matkul, 'ctype' => $ctype, 'semester' => $semester, 'kd_progstudi' => $kd_progstudi, 'thn_akademik' => $this->session->userdata('thn_akademik'), 'kd_kelas' => $kd_kelas, 'aktif' => 1],
         );
-        $this->data_mahasiswa = $this->db->select('cbt_jawaban.jawaban, cbt_jawaban.npm, cbt_soal.soal, cbt_soal.kd_soal, cbt_jawaban.hasil_nilai')
+        $this->data_mahasiswa = $this->db->select('cbt_jawaban.jawaban, cbt_jawaban.npm, cbt_soal.soal, cbt_soal.kd_soal, cbt_jawaban.hasil_nilai, cbt_jawaban.kd_jawaban')
             ->from('cbt_jawaban')
             ->join('cbt_soal', 'cbt_jawaban.kd_soal = cbt_soal.kd_soal')
             ->where([
@@ -140,7 +140,7 @@ class Essay extends CI_Controller
             'thn_akademik' => $this->session->userdata('thn_akademik'),
             'kd_kelas' => $kd_kelas
         ], table: 'cbt_jawaban', item_desc: 'npm');
-        $this->data_mahasiswa = $this->db->select('cbt_jawaban.jawaban, cbt_jawaban.npm, cbt_soal.soal, cbt_soal.kd_soal, cbt_jawaban.hasil_nilai')
+        $this->data_mahasiswa = $this->db->select('cbt_jawaban.jawaban, cbt_jawaban.npm, cbt_soal.soal, cbt_soal.kd_soal, cbt_jawaban.hasil_nilai, cbt_jawaban.kd_jawaban')
             ->from('cbt_jawaban')
             ->join('cbt_soal', 'cbt_jawaban.kd_soal = cbt_soal.kd_soal')
             ->where([
@@ -157,6 +157,15 @@ class Essay extends CI_Controller
             'melihat_jawaban_esai_dan_nilai_uas',
             ['kd_matkul' => $kd_matkul, 'jawaban_mahasiswa' => $this->data_mahasiswa, 'mahasiswa' => $mahasiswa]
         );
+        $this->load->view('template/footer');
+    }
+
+    public function hasil_algoritma($kd_jawaban)
+    {
+        $data_hasil = $this->essay_model->show_data(column: 'jawaban_mahasiswa, kunci_jawaban, winnowing_jawaban, winnowing_kunci_jawaban, dot_product, magnitude_esai, magnitude_kunci_jawaban, similarity', table: 'cbt_perhitungan_algoritma', param: ['kd_jawaban' => $kd_jawaban]);
+        $nilai_perolehan = $this->essay_model->show_data(column: 'hasil_nilai', table: 'cbt_jawaban', param: ['kd_jawaban' => $kd_jawaban]);
+        $this->load->view('template/header');
+        $this->load->view('hasil_algoritma', ['title' => "Hasil Algoritma", 'data_hasil' => $data_hasil, 'nilai' => $nilai_perolehan]);
         $this->load->view('template/footer');
     }
 

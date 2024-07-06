@@ -67,8 +67,6 @@ class RequestHandler(BaseHTTPRequestHandler):
             response = {
                 'jawaban': jawaban_essay,
                 'kunci_jawaban': kunci_jawaban_essay, 
-                # 'jawaban_essay_vektor': jawaban_essay_encode,
-                # 'kunci_jawaban_vektor': kunci_jawaban_encode,
                 'winnowing_jawaban_essay': winnowing_jawaban_essay,
                 'winnowing_kunci_jawaban': winnowing_kunci_jawaban,
                 'dot_product': dot_product,

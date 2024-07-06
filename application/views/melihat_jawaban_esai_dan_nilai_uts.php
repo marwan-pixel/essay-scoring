@@ -9,6 +9,30 @@ $total_skor = 0;
 <h5 class="card-subtitle text-muted mb-3">Kode Matkul: <?= $kd_matkul; ?></h5>
 <h5 class="card-subtitle fw-bold mb-3">Jawaban Mahasiswa</h5>
 
+
+<div class="modal fade" id="hasilAlgoritma" tabindex="-1" aria-labelledby="hasilAlgoritmaLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="hasilAlgoritmaLabel">Hasil Algoritma</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="card">
+                    <div class="card-body">
+                        <p>Jawaban Mahasiswa</p>
+
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <div class="table-responsive">
     <table class="table no-margin">
         <tbody class="table-group-divider">
@@ -42,7 +66,7 @@ $total_skor = 0;
                                                     <p>Nilai Perolehan Per Soal: <b><?= $value_2['hasil_nilai']; ?></b></p>
                                                 </div>
                                                 <div class="col-6">
-                                                    <button class="btn btn-outline-secondary">Hasil Algoritma</button>
+                                                    <a href="<?= base_url('hasil_algoritma/' . $value_2['kd_jawaban']); ?>" class="btn btn-outline-secondary">Hasil Algoritma</a>
                                                 </div>
                                             </div>
                                         </div>

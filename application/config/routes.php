@@ -58,6 +58,7 @@ $route['input_soal_esai_uts/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay/input_
 $route['input_soal_esai_uas/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay/input_soal_esai_uas/$1/$2/$3/$4/$5';
 $route['dashboard_home_mahasiswa'] = 'essay/dashboard_home_mahasiswa';
 $route['melihat_jawaban_esai_dan_nilai_uts/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay/melihat_jawaban_esai_dan_nilai_uts/$1/$2/$3/$4/$5';
+$route['hasil_algoritma/(:any)'] = 'essay/hasil_algoritma/$1';
 $route['melihat_jawaban_esai_dan_nilai_uas/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay/melihat_jawaban_esai_dan_nilai_uas/$1/$2/$3/$4/$5';
 $route['menjawab_soal_esai/(:any)/(:any)/(:any)/(:any)'] = 'essay/menjawab_soal_esai/$1/$2/$3/$4';
 $route['input_matkul'] = 'essay_controller/add_data_matkul';
