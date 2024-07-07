@@ -102,11 +102,6 @@ class Essay extends CI_Controller
          * SELECT cbt_jawaban.jawaban, cbt_jawaban.npm, cbt_soal.soal, cbt_soal.kd_soal FROM cbt_jawaban JOIN cbt_soal ON cbt_jawaban.kd_soal = cbt_soal.kd_soal WHERE cbt_soal.ctype = 3 AND cbt_soal.kd_matkul = 'IS301' AND cbt_soal.kd_kelas = "C" AND cbt_soal.thn_akademik = '2022/2023';
          */
         $this->session->set_userdata('kd_matkul', $kd_matkul);
-        $mahasiswa = $this->essay_model->get_only_one_data(column: 'npm', param: [
-            'kd_matkul' => $this->session->userdata('kd_matkul'),
-            'thn_akademik' => $this->session->userdata('thn_akademik'),
-            'kd_kelas' => $kd_kelas
-        ], table: 'cbt_jawaban', item_desc: 'npm');
         $this->soal_matakuliah = $this->essay_model->show_data(
             column: 'kd_soal, soal, kunci_jawaban, aktif, bobot_soal',
             table: 'cbt_soal',
@@ -116,18 +111,18 @@ class Essay extends CI_Controller
             ->from('cbt_jawaban')
             ->join('cbt_soal', 'cbt_jawaban.kd_soal = cbt_soal.kd_soal')
             ->where([
-                'cbt_soal.aktif' => 1,
                 'cbt_soal.ctype' => $ctype,
                 'cbt_soal.kd_matkul' => $kd_matkul,
                 'cbt_soal.kd_kelas' => $kd_kelas,
                 'cbt_soal.kd_progstudi' => $kd_progstudi,
                 'cbt_soal.semester' => $semester,
                 'cbt_soal.thn_akademik' => $this->session->userdata('thn_akademik')
-            ])->order_by('cbt_jawaban.npm', 'DESC')->get()->result_array();
+            ])->order_by('cbt_jawaban.hasil_nilai', 'DESC')->get()->result_array();
+
         $this->load->view('template/header');
         $this->load->view(
             'melihat_jawaban_esai_dan_nilai_uts',
-            ['kd_matkul' => $kd_matkul, 'jawaban_mahasiswa' => $this->data_mahasiswa, 'mahasiswa' => $mahasiswa, 'total_soal' => $this->soal_matakuliah]
+            ['kd_matkul' => $kd_matkul, 'jawaban_mahasiswa' => $this->data_mahasiswa, 'soal_matakuliah' => $this->soal_matakuliah]
         );
         $this->load->view('template/footer');
     }
@@ -135,11 +130,11 @@ class Essay extends CI_Controller
     public function melihat_jawaban_esai_dan_nilai_uas($kd_progstudi, $kd_matkul, $kd_kelas, $semester, $ctype)
     {
         $this->session->set_userdata('kd_matkul', $kd_matkul);
-        $mahasiswa = $this->essay_model->get_only_one_data(column: 'npm', param: [
-            'kd_matkul' => $this->session->userdata('kd_matkul'),
-            'thn_akademik' => $this->session->userdata('thn_akademik'),
-            'kd_kelas' => $kd_kelas
-        ], table: 'cbt_jawaban', item_desc: 'npm');
+        $this->soal_matakuliah = $this->essay_model->show_data(
+            column: 'kd_soal, soal, kunci_jawaban, aktif, bobot_soal',
+            table: 'cbt_soal',
+            param: ['kd_matkul' => $kd_matkul, 'ctype' => $ctype, 'semester' => $semester, 'kd_progstudi' => $kd_progstudi, 'thn_akademik' => $this->session->userdata('thn_akademik'), 'kd_kelas' => $kd_kelas, 'aktif' => 1],
+        );
         $this->data_mahasiswa = $this->db->select('cbt_jawaban.jawaban, cbt_jawaban.npm, cbt_soal.soal, cbt_soal.kd_soal, cbt_jawaban.hasil_nilai, cbt_jawaban.kd_jawaban')
             ->from('cbt_jawaban')
             ->join('cbt_soal', 'cbt_jawaban.kd_soal = cbt_soal.kd_soal')
@@ -150,12 +145,12 @@ class Essay extends CI_Controller
                 'cbt_soal.kd_progstudi' => $kd_progstudi,
                 'cbt_soal.semester' => $semester,
                 'cbt_soal.thn_akademik' => $this->session->userdata('thn_akademik')
-            ])->order_by('cbt_jawaban.npm', 'DESC')->get()->result_array();
+            ])->order_by('cbt_jawaban.hasil_nilai', 'DESC')->get()->result_array();
 
         $this->load->view('template/header');
         $this->load->view(
             'melihat_jawaban_esai_dan_nilai_uas',
-            ['kd_matkul' => $kd_matkul, 'jawaban_mahasiswa' => $this->data_mahasiswa, 'mahasiswa' => $mahasiswa]
+            ['kd_matkul' => $kd_matkul, 'jawaban_mahasiswa' => $this->data_mahasiswa, 'soal_matakuliah' => $this->soal_matakuliah]
         );
         $this->load->view('template/footer');
     }
