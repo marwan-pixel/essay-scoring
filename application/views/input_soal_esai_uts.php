@@ -128,6 +128,7 @@ echo $this->session->flashdata('message'); ?>
         aktifField.value = editableData[2].innerText;
         kunciJawabanField.setData(editableData[3].innerText);
         bobotSoalField.value = editableData[4].innerText;
+        console.log(aktifField.value);
       });
     });
   });

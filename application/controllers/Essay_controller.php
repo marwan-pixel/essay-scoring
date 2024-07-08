@@ -84,7 +84,7 @@ class Essay_Controller extends Essay
             'kunci_jawaban' => $this->input->post('kunci_jawaban'),
             'thn_akademik' => $this->session->userdata('thn_akademik'),
             'nip' => $this->session->userdata('nip'),
-            'aktif' => $this->input->post('aktif'),
+            'aktif' => (int)$this->input->post('aktif'),
             'dentry' => date('Y-m-d h:m:s')
         );
         $dataValidation = array(
@@ -122,9 +122,12 @@ class Essay_Controller extends Essay
             // var_dump(count($isAnswerSaved));
             // die();
             if (count($isAnswerSaved) == 0) {
+                $this->soal_matakuliah['aktif'] = 1;
                 $soal_saved = $this->essay_model->add_data(table: 'cbt_soal', data: $this->soal_matakuliah);
             } else {
                 unset($this->soal_matakuliah['dentry']);
+                // var_dump($this->soal_matakuliah['aktif']);
+                // die();
                 $this->soal_matakuliah['dupdate'] = date('Y-m-d h:m:s');
                 $soal_saved = $this->essay_model->update_data(table: 'cbt_soal', data: $this->soal_matakuliah, param: ['kd_soal' => $this->input->post('kd_soal')]);
             }
