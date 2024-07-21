@@ -44,7 +44,7 @@ CREATE TABLE IF NOT EXISTS `cbt_jawaban` (
   `date_update` datetime NOT NULL,
   `hasil_nilai` int NOT NULL,
   PRIMARY KEY (`kd_jawaban`)
-) ENGINE=InnoDB AUTO_INCREMENT=74983 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=74985 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Pengeluaran data tidak dipilih.
 
@@ -67,7 +67,7 @@ CREATE TABLE IF NOT EXISTS `cbt_kontrak_matakuliah` (
   `nilai_uas` int NOT NULL DEFAULT '0',
   `akses_ujian` int NOT NULL DEFAULT '0',
   PRIMARY KEY (`id_kontrak_matakuliah`) USING BTREE
-) ENGINE=InnoDB AUTO_INCREMENT=2855 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=3014 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Pengeluaran data tidak dipilih.
 
@@ -119,7 +119,7 @@ CREATE TABLE IF NOT EXISTS `cbt_perhitungan_algoritma` (
   `magnitude_kunci_jawaban` float NOT NULL DEFAULT '0',
   `similarity` float NOT NULL DEFAULT '0',
   PRIMARY KEY (`kd_hasil`)
-) ENGINE=InnoDB AUTO_INCREMENT=52 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=74 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 -- Pengeluaran data tidak dipilih.
 
@@ -150,7 +150,7 @@ CREATE TABLE IF NOT EXISTS `cbt_soal` (
   `dentry` datetime NOT NULL,
   `dupdate` datetime NOT NULL,
   PRIMARY KEY (`kd_soal`)
-) ENGINE=InnoDB AUTO_INCREMENT=4889 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=4891 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- Pengeluaran data tidak dipilih.
 
