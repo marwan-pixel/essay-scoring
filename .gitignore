@@ -3,7 +3,6 @@
 application/cache/*
 !application/cache/index.html
 
-venv/
 
 application/logs/*
 !application/logs/index.html
