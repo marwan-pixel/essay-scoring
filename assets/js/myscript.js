@@ -20,7 +20,7 @@ $('.update-status-soal').on('click', function(e) {
 $('.tambah-data-soal').on('submit', function(e) {
     e.preventDefault();
     Swal.fire({
-        title: 'Menambah Data Soal',
+        title: 'Menyimpan Data Soal',
         text: " Apakah anda yakin ingin menyimpan data soal ini?",
         icon: 'question',
         showCancelButton: true,
@@ -72,7 +72,7 @@ $('.logout').on('click', function(e) {
     });
 });
 
-$('.back-button').on('click', function(e) {
+$('.akhiri-ujian-button').on('click', function(e) {
     e.preventDefault();
     const href = $(this).attr('href');
     Swal.fire({

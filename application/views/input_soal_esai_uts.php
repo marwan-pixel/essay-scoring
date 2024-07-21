@@ -8,7 +8,10 @@ if (is_null($this->session->userdata('nip'))) {
 <?php
 echo $this->session->flashdata('success');
 echo $this->session->flashdata('message'); ?>
-<form action="<?= base_url('input_soal'); ?>" class="tambah-data-soal" method="post">
+
+<button class="btn btn-primary onboarding_input mb-3">Bantuan</button>
+
+<form data-intro="Ini adalah form untuk meng-upload Soal Esai" action="<?= base_url('input_soal'); ?>" enctype="multipart/form-data" class="tambah-data-soal" method="post">
   <input type="hidden" name="kd_progstudi" value="<?= $kd_progstudi ?>" id="">
   <input type="hidden" name="semester" value="<?= $semester ?>" id="">
   <input type="hidden" name="kd_kelas" value="<?= $kd_kelas ?>" id="">
@@ -18,21 +21,25 @@ echo $this->session->flashdata('message'); ?>
   <input type="hidden" name="aktif" value="" id="aktif">
   <div class="card box">
     <div class="card-header">
-      <h4>Silakan Masukkan Soal Esai: <b><?= $kd_matkul ?></b></h4>
+      <h4>Silakan Masukkan Soal Esai: <b><?= $nama_matkul[0]['mata_kuliah'] ?></b></h4>
     </div>
     <div class="card-body">
-      <div class="mt-3">
+      <div class="mt-3" data-intro="Form Input ini untuk meng-upload soal esai yang ingin di-upload">
         <label class="form-label" for="soal">Soal Esai</label>
         <textarea name="soal" id="soal" cols="80"></textarea>
         <?= form_error('soal', '<small class="text-danger pl-3">', '</small>'); ?>
       </div>
+      <div class="mt-3" data-intro="Form Input ini untuk meng-upload gambar yang ingin dilampirkan">
+        <label for="gambar" class="form-label">Silakan Upload Lampiran Gambar</label>
+        <input type="file" class="form-control" name="gambar" id="gambar">
+      </div>
       <div class="mt-3">
-        <label class="form-label" for="kunci_jawaban">Kunci Jawaban</label>
+        <label class="form-label" data-intro="Form Input ini untuk meng-upload kunci jawaban esai" for="kunci_jawaban">Kunci Jawaban</label>
         <textarea name="kunci_jawaban" id="kunci_jawaban" cols="80"></textarea>
         <?= form_error('kunci_jawaban', '<small class="text-danger pl-3">', '</small>'); ?>
       </div>
       <div class="mt-3">
-        <label for="bobot" class="form-label ">Bobot Soal</label>
+        <label for="bobot" class="form-label" data-intro="Form Input ini untuk menginput nilai bobot pada soal">Bobot Soal</label>
         <input type="number" name="bobot_soal" id="bobot_soal" class="form-control">
         <?= form_error('bobot_soal', '<small class="text-danger pl-3">', '</small>'); ?>
       </div>
@@ -57,6 +64,9 @@ echo $this->session->flashdata('message'); ?>
             <td><?= $key + 1; ?></td>
             <td class="col-6">
               <div class="editable pe-auto"><?= $value['soal'] ?? ''; ?></div>
+              <?php if ($value['gambar'] !== '') : ?>
+                <img src=" <?= base_url() . 'assets/gambar/' . $value['gambar'] ?>" alt="">
+              <?php endif; ?>
               <div class="card">
                 <div class="card-body">
                   <div class="card-title">
@@ -123,13 +133,22 @@ echo $this->session->flashdata('message'); ?>
 
         soalField.focus();
         const editableData = td.querySelectorAll('.editable');
-        soalField.setData(editableData[0].innerText);
-        kodeSoalField.value = editableData[1].innerText;
-        aktifField.value = editableData[2].innerText;
-        kunciJawabanField.setData(editableData[3].innerText);
+        soalField.setData(editableData[0].innerHTML);
+        kodeSoalField.value = editableData[1].innerHTML;
+        aktifField.value = editableData[2].innerHTML;
+        console.log(editableData[3].innerText)
+        if (editableData[3].innerText == "Belum diinputkan") {
+          editableData[3].innerText = "";
+        }
+        kunciJawabanField.setData(editableData[3].innerHTML);
         bobotSoalField.value = editableData[4].innerText;
         console.log(aktifField.value);
       });
+    });
+
+    const onBoardingInput = document.querySelector('.onboarding_input');
+    onBoardingInput.addEventListener('click', function() {
+      introJs().start();
     });
   });
 </script>

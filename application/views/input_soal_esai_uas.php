@@ -4,14 +4,14 @@ if (is_null($this->session->userdata('nip'))) {
 }
 ?>
 <a href="<?= base_url('/') ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
+<button class="btn btn-primary onboarding_input mb-3">Bantuan</button>
 
 <?php
 echo $this->session->flashdata('success');
 echo $this->session->flashdata('message'); ?>
 
-<form action="<?= base_url('input_soal'); ?>" method="post">
+<form data-intro="Ini adalah form untuk meng-upload Soal Esai" action="<?= base_url('input_soal'); ?>" enctype="multipart/form-data" class="tambah-data-soal" method="post">
   <input type="hidden" name="kd_progstudi" value="<?= $kd_progstudi ?>" id="">
-  <input type="hidden" name="kd_soal" value="" id="kd_soal">
   <input type="hidden" name="semester" value="<?= $semester ?>" id="">
   <input type="hidden" name="kd_kelas" value="<?= $kd_kelas ?>" id="">
   <input type="hidden" name="kd_matkul" value="<?= $kd_matkul ?>" id="">
@@ -23,18 +23,22 @@ echo $this->session->flashdata('message'); ?>
       <h4>Silakan Masukkan Soal Esai: <b><?= $kd_matkul ?></b></h4>
     </div>
     <div class="card-body">
-      <div class="mt-3">
+      <div class="mt-3" data-intro="Form Input ini untuk meng-upload soal esai yang ingin di-upload">
         <label class="form-label" for="soal">Soal Esai</label>
         <textarea name="soal" id="soal" cols="80"></textarea>
         <?= form_error('soal', '<small class="text-danger pl-3">', '</small>'); ?>
       </div>
-      <div class="mt-3">
+      <div class="mt-3" data-intro="Form Input ini untuk meng-upload gambar yang ingin dilampirkan">
+        <label for="gambar" class="form-label">Silakan Upload Lampiran Gambar</label>
+        <input type="file" class="form-control" name="gambar" id="gambar">
+      </div>
+      <div class="mt-3" data-intro="Form Input ini untuk meng-upload kunci jawaban esai">
         <label class="form-label mt-3" for="kunci_jawaban">Kunci Jawaban</label>
         <textarea name="kunci_jawaban" id="kunci_jawaban" cols="80"></textarea>
         <?= form_error('kunci_jawaban', '<small class="text-danger pl-3">', '</small>'); ?>
-        <div class="mt-3">
-        </div>
-        <label for="bobot" class="form-label ">Bobot Soal</label>
+      </div>
+      <div class="mt-3" data-intro="Form Input ini untuk menginput nilai bobot pada soal">
+        <label for="bobot" class="form-label">Bobot Soal</label>
         <input type="number" name="bobot_soal" id="bobot" class="form-control">
         <?= form_error('bobot_soal', '<small class="text-danger pl-3">', '</small>'); ?>
       </div>
@@ -43,7 +47,7 @@ echo $this->session->flashdata('message'); ?>
   </div>
 </form>
 
-<table class="table mt-2">
+<table class="table mt-2" data-intro="Soal esai, kunci jawaban, dan bobot soal yang telah diinputkan akan disimpan di sini">
   <thead>
     <tr>
       <th>No</th>
@@ -82,7 +86,7 @@ echo $this->session->flashdata('message'); ?>
                 <div class="card-title">
                   <p><b>Bobot Soal:</b></p>
                 </div>
-                <div class="update_bobot_soal">
+                <div class="update_bobot_soal editable">
                   <?= $value['bobot_soal']; ?>
                 </div>
               </div>
@@ -93,7 +97,7 @@ echo $this->session->flashdata('message'); ?>
             <?= $value['aktif'] == 1 ? 'Soal ditampilkan di CBT' : "Soal tidak ditampilkan di CBT" ?>
           </td>
           <td>
-            <a href="<?= base_url('update_status_soal/' . $kd_progstudi . '/' . $kd_matkul . '/' . $kd_kelas . '/' . $semester . '/' . $ctype . '/' . $value['kd_soal'] . '/' . $value['aktif']); ?>" id="" class="update-status-soal btn btn-outline-secondary"><?= $value['aktif'] == 1 ? 'Soal Tidak Ditampilkan' : 'Soal Ditampilkan'; ?></a>
+            <a href="<?= base_url('update_status_soal/' . $kd_progstudi . '/' . $kd_matkul . '/' . $kd_kelas . '/' . $semester . '/' . $ctype . '/' . $value['kd_soal'] . '/' . $value['aktif']); ?>" id="" class="update-status-soal btn btn-primary"><?= $value['aktif'] == 1 ? 'Soal Tidak Ditampilkan' : 'Soal Ditampilkan'; ?></a>
           </td>
         </tr>
       <?php
@@ -121,17 +125,30 @@ echo $this->session->flashdata('message'); ?>
         const kodeSoalField = document.getElementById('kd_soal');
         const soalField = CKEDITOR.instances.soal;
         const kunciJawabanField = CKEDITOR.instances.kunci_jawaban;
-        const bobotSoalField = document.getElementById('bobot_soal');
+        const bobotSoalField = document.getElementById('bobot');
         const aktifField = document.getElementById('aktif');
 
         soalField.focus();
         const editableData = td.querySelectorAll('.editable');
-        soalField.setData(editableData[0].innerText);
-        kodeSoalField.value = editableData[1].innerText;
-        aktifField.value = editableData[2].innerText;
-        kunciJawabanField.setData(editableData[3].innerText);
+        soalField.setData(editableData[0].innerHTML);
+        kodeSoalField.value = editableData[1].innerHTML;
+        aktifField.value = editableData[2].innerHTML;
+        console.log(editableData[4])
+        if (editableData[3].innerText == "Belum diinputkan") {
+          editableData[3].innerText = "";
+        }
+        kunciJawabanField.setData(editableData[3].innerHTML);
         bobotSoalField.value = editableData[4].innerText;
+        console.log(aktifField.value);
       });
+    });
+
+    const onBoardingInput = document.querySelector('.onboarding_input');
+    console.log(document.querySelector('.table tbody tr:first-child td .update-button'));
+    document.querySelector('.table tbody tr:first-child td .update-button').setAttribute('data-intro', "Jika ada soal esai, kunci jawaban, atau bobot soal yang ingin diubah, bisa mengklik tombol ini untuk memperbarui data");
+    document.querySelector('.table tbody tr:first-child td .update-status-soal').setAttribute('data-intro', "Jika soal esai tidak ingin ditampilkan, bisa mengklik tombol ini untuk mengubah status soal esai");
+    onBoardingInput.addEventListener('click', function() {
+      introJs().start();
     });
   });
 </script>

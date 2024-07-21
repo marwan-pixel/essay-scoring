@@ -1,6 +1,9 @@
 <?php
 // var_dump($nilai);
 // die();
+
+use function PHPUnit\Framework\isNull;
+
 ?>
 <div class="container">
     <a href="<?= base_url('/'); ?>" class="btn btn-primary mb-3"> <i class="bi bi-arrow-left"></i></a>
@@ -11,7 +14,7 @@
             Jawaban Mahasiswa
         </div>
         <div class="card-body">
-            <?= $data_hasil[0]['jawaban_mahasiswa'] ?? '' ?>
+            <?= $data_hasil[0]['jawaban_mahasiswa'] ?? 'Tidak ada' ?>
         </div>
     </div>
     <div class="card mt-3">
@@ -19,7 +22,7 @@
             Kunci Jawaban
         </div>
         <div class="card-body">
-            <?= $data_hasil[0]['kunci_jawaban'] ?? '' ?>
+            <?= $data_hasil[0]['kunci_jawaban'] ?? 'Tidak ada' ?>
         </div>
     </div>
     <div class="card mt-3">
@@ -27,7 +30,7 @@
             Winnowing Jawaban
         </div>
         <div class="card-body">
-            <?= $data_hasil[0]['winnowing_jawaban'] ?? '' ?>
+            <?= $data_hasil[0]['winnowing_jawaban'] ?? 'Tidak ada' ?>
         </div>
     </div>
     <div class="card mt-3">
@@ -35,7 +38,7 @@
             Winnowing Kunci Jawaban
         </div>
         <div class="card-body">
-            <?= $data_hasil[0]['winnowing_kunci_jawaban'] ?? '' ?>
+            <?= $data_hasil[0]['winnowing_kunci_jawaban'] ?? 'Tidak ada' ?>
         </div>
     </div>
     <div class="card mt-3">
@@ -43,15 +46,15 @@
             Dot Product
         </div>
         <div class="card-body">
-            <?= $data_hasil[0]['dot_product'] ?? '' ?>
+            <?= $data_hasil[0]['dot_product'] ?? 'Tidak ada' ?>
         </div>
     </div>
     <div class="card mt-3">
         <div class="card-header">
-            Magnitude Esai
+            Magnitude Jawaban Esai
         </div>
         <div class="card-body">
-            <?= $data_hasil[0]['magnitude_esai'] ?? '' ?>
+            <?= $data_hasil[0]['magnitude_esai'] ?? 'Tidak ada' ?>
         </div>
     </div>
     <div class="card mt-3">
@@ -59,17 +62,22 @@
             Magnitude Kunci Jawaban
         </div>
         <div class="card-body">
-            <?= $data_hasil[0]['magnitude_kunci_jawaban'] ?? '' ?>
+            <?= $data_hasil[0]['magnitude_kunci_jawaban'] ?? 'Tidak ada' ?>
         </div>
     </div>
     <div class="card mt-3">
         <div class="card-header">
-            Similarity:
+            Persentase Similarity:
 
-            Dot Product / (Magnitude Soal * Magnitude Kunci Jawaban)
+            (Dot Product / (Magnitude Jawaban Esai * Magnitude Kunci Jawaban)) * 100%
         </div>
         <div class="card-body">
-            <?= $data_hasil[0]['similarity'] ?? '' ?>
+            <?php
+            if (count($data_hasil) > 0) :
+                echo $data_hasil[0]['similarity'] * 100 . '%';
+            else :
+                echo '0';
+            endif; ?>
         </div>
     </div>
     <div class="card mt-3">
@@ -77,7 +85,7 @@
             Nilai Hasil
         </div>
         <div class="card-body">
-            <?= $nilai[0]['hasil_nilai'] ?? '' ?>
+            <?= $nilai[0]['hasil_nilai'] ?? 'Tidak ada' ?>
         </div>
     </div>
 </div>
