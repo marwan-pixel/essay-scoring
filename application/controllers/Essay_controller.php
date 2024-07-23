@@ -220,11 +220,11 @@ class Essay_Controller extends Essay
             $remove_breakline_jawaban = $this->jawaban_essay['jawaban'];
             $remove_breakline_kj = $this->input->post('kunci_jawaban');
             $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, bobot: $this->input->post('bobot_soal'));
-            // echo '<pre>';
-            // var_dump($nilai);
-            // // var_dump($this->jawaban_essay['kd_matkul']);
-            // echo '</pre>';
-            // die();
+            echo '<pre>';
+            var_dump($nilai);
+            // var_dump($this->jawaban_essay['kd_matkul']);
+            echo '</pre>';
+            die();
             $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
             $isAnswerSaved = $this->essay_model->show_data(column: 'jawaban', table: 'cbt_jawaban', param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
             if (count($isAnswerSaved) == 0) {
@@ -287,7 +287,7 @@ class Essay_Controller extends Essay
 
     public function essay_scoring(string $jawaban, string $kunci_jawaban, int $bobot)
     {
-        $process = $this->text_preprocessing($jawaban, $kunci_jawaban);
+        $process = $this->text_preprocessing($jawaban, $kunci_jawaban, $bobot);
         // $preprocessed_key_answer_ = $this->text_preprocessing($kunci_jawaban);
         // $array_answer = explode(" ", $preprocessed_answer_);
         // $array_key_answer = explode(" ", $preprocessed_key_answer_);
@@ -308,23 +308,23 @@ class Essay_Controller extends Essay
         // $hashing_key_answer = $this->rolling_hash($tokenized_key_answer, 3);
         // $winnowing_answer = $this->winnowing($hashing_answer, 4);
         // $winnowing_key_answer = $this->winnowing($hashing_key_answer, 4);
-        $similarity = $process->similarity;
-        $final_score = $similarity * $bobot;
-        return array(
-            'jawaban_mahasiswa' => $process->jawaban,
-            'kunci_jawaban' => $process->kunci_jawaban,
-            'winnowing_jawaban' => json_encode($process->winnowing_jawaban_essay),
-            'winnowing_kunci_jawaban' => json_encode($process->winnowing_kunci_jawaban),
-            'dot_product' => $process->dot_product,
-            'magnitude_esai' => $process->magnitude_esai,
-            'magnitude_kunci_jawaban' => $process->magnitude_kj,
-            'similarity' => $similarity,
-            'hasil_nilai' => (int)round($final_score)
-        );
-        // return $process;
+        // $similarity = $process->similarity;
+        // $final_score = $similarity * $bobot;
+        // return array(
+        //     'jawaban_mahasiswa' => $process->jawaban,
+        //     'kunci_jawaban' => $process->kunci_jawaban,
+        //     'winnowing_jawaban' => json_encode($process->winnowing_jawaban_essay),
+        //     'winnowing_kunci_jawaban' => json_encode($process->winnowing_kunci_jawaban),
+        //     'dot_product' => $process->dot_product,
+        //     'magnitude_esai' => $process->magnitude_esai,
+        //     'magnitude_kunci_jawaban' => $process->magnitude_kj,
+        //     'similarity' => $similarity,
+        //     'hasil_nilai' => (int)round($final_score)
+        // );
+        return $process;
     }
 
-    private function text_preprocessing(string $jawaban, string $kunci_jawaban)
+    private function text_preprocessing(string $jawaban, string $kunci_jawaban, int $bobot)
     {
         $preprocessing_jawaban = strip_tags($jawaban);
         $preprocessing_kunci_jawaban = strip_tags($kunci_jawaban);
@@ -346,7 +346,8 @@ class Essay_Controller extends Essay
 
         $data = array(
             'jawaban_esai' => $preprocessing_jawaban,
-            'kunci_jawaban_esai' => $preprocessing_kunci_jawaban
+            'kunci_jawaban_esai' => $preprocessing_kunci_jawaban,
+            'bobot' => $bobot
         );
 
         $json_data = json_encode($data);
