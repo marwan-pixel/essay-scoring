@@ -58,11 +58,23 @@ $route['input_soal_esai_uts/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay/input_
 $route['input_soal_esai_uas/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay/input_soal_esai_uas/$1/$2/$3/$4/$5';
 $route['dashboard_home_mahasiswa'] = 'essay/dashboard_home_mahasiswa';
 $route['melihat_jawaban_esai_dan_nilai_uts/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay/melihat_jawaban_esai_dan_nilai_uts/$1/$2/$3/$4/$5';
+<<<<<<< HEAD
 $route['melihat_jawaban_esai_dan_nilai_uas/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay/melihat_jawaban_esai_dan_nilai_uas/$1/$2/$3/$4/$5';
+=======
+$route['hasil_algoritma/(:any)'] = 'essay/hasil_algoritma/$1';
+$route['melihat_jawaban_esai_dan_nilai_uas/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay/melihat_jawaban_esai_dan_nilai_uas/$1/$2/$3/$4/$5';
+$route['data_mahasiswa/(:any)/(:any)/(:any)/(:any)'] = 'essay/data_mahasiswa/$1/$2/$3/$4';
+$route['menjawab_soal_esai/(:any)/(:any)/(:any)/(:any)'] = 'essay/menjawab_soal_esai/$1/$2/$3/$4';
+>>>>>>> 518c5dffa9444c60e25e8ff5f447792e3b9daee0
 $route['menjawab_soal_esai/(:any)/(:any)/(:any)/(:any)'] = 'essay/menjawab_soal_esai/$1/$2/$3/$4';
 $route['input_matkul'] = 'essay_controller/add_data_matkul';
 $route['input_soal'] = 'essay_controller/add_data_soal';
 $route['simpan_jawaban_esai'] = 'essay_controller/simpan_jawaban_esai';
+<<<<<<< HEAD
+=======
+$route['mengakhiri_ujian/(:any)/(:any)/(:any)'] = 'essay_controller/mengakhiri_ujian/$1/$2/$3';
+$route['memberi_akses_ujian/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay_controller/memberi_akses_ujian/$1/$2/$3/$4/$5/$6';
+>>>>>>> 518c5dffa9444c60e25e8ff5f447792e3b9daee0
 $route['update_status_soal/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)/(:any)'] = 'essay_controller/update_status_soal/$1/$2/$3/$4/$5/$6/$7';
 $route['input_mhs'] = 'essay_controller/add_data_mhs';
 $route['translate_uri_dashes'] = FALSE;
