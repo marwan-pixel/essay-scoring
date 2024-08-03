@@ -67,7 +67,7 @@ if (is_null($this->session->userdata('nip'))) {
             ?>
                     <tr>
                         <td><?= ++$key ?></td>
-                        <td><?= $data['npm'] ?></td>
+                        <td><?= $data['nama_mahasiswa'] . ' (' . $data['npm'] . ')' ?></td>
                         <td><?= $data['nilai_uts'] ?></td>
                     </tr>
                 <?php

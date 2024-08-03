@@ -220,11 +220,10 @@ class Essay_Controller extends Essay
             $remove_breakline_jawaban = $this->jawaban_essay['jawaban'];
             $remove_breakline_kj = $this->input->post('kunci_jawaban');
             $nilai = $this->essay_scoring(jawaban: $remove_breakline_jawaban, kunci_jawaban: $remove_breakline_kj, bobot: $this->input->post('bobot_soal'));
-            echo '<pre>';
-            var_dump($nilai);
-            // var_dump($this->jawaban_essay['kd_matkul']);
-            echo '</pre>';
-            die();
+            // echo '<pre>';
+            // var_dump($nilai);
+            // echo '</pre>';
+            // die();
             $this->jawaban_essay['hasil_nilai'] = $nilai['hasil_nilai'];
             $isAnswerSaved = $this->essay_model->show_data(column: 'jawaban', table: 'cbt_jawaban', param: ['kd_soal' => $this->jawaban_essay['kd_soal'], 'npm' => $this->jawaban_essay['npm']]);
             if (count($isAnswerSaved) == 0) {
@@ -241,6 +240,7 @@ class Essay_Controller extends Essay
                     'cbt_soal.semester' => $this->jawaban_essay['semester'],
                     'cbt_soal.kd_matkul' => $this->jawaban_essay['kd_matkul'],
                     'cbt_soal.thn_akademik' => $this->session->userdata('thn_akademik'),
+                    'cbt_soal.aktif' => 1,
                 ])->get()->result_array();
             $nilai_rekapitulasi_saved = $this->input->post('ctype') == 3 ?
                 $this->essay_model->update_data(table: 'cbt_kontrak_matakuliah', data: ['nilai_uts' => $total_nilai[0]['SUM(cbt_jawaban.hasil_nilai)']], param: ['kd_matkul' => $this->jawaban_essay['kd_matkul'], 'npm' =>  $this->jawaban_essay['npm'], 'thn_akademik' =>  $this->jawaban_essay['thn_akademik'], 'semester' =>  $this->jawaban_essay['semester']]) :
@@ -287,66 +287,36 @@ class Essay_Controller extends Essay
 
     public function essay_scoring(string $jawaban, string $kunci_jawaban, int $bobot)
     {
-        $process = $this->text_preprocessing($jawaban, $kunci_jawaban, $bobot);
-        // $preprocessed_key_answer_ = $this->text_preprocessing($kunci_jawaban);
-        // $array_answer = explode(" ", $preprocessed_answer_);
-        // $array_key_answer = explode(" ", $preprocessed_key_answer_);
-        // $array = [];
-        // foreach ($array_key_answer as $value) {
-        //     $count = count(array_keys(array_map('strtolower', $array_answer), strtolower($value)));
-        //     for ($i = 0; $i < $count; $i++) {
-        //         $array[] = $value;
-        //     }
-        //     $array_answer = array_diff($array_answer, [$value]);
-        // }
-        // $preprocessed_answer = implode(" ", array_unique($array));
-        // $preprocessed_key_answer = implode(" ", array_unique($array_key_answer));
-
-        // $tokenized_answer = $this->tokenization($preprocessed_answer, 4);
-        // $tokenized_key_answer = $this->tokenization($preprocessed_key_answer, 4);
-        // $hashing_answer = $this->rolling_hash($tokenized_answer, 3);
-        // $hashing_key_answer = $this->rolling_hash($tokenized_key_answer, 3);
-        // $winnowing_answer = $this->winnowing($hashing_answer, 4);
-        // $winnowing_key_answer = $this->winnowing($hashing_key_answer, 4);
-        // $similarity = $process->similarity;
-        // $final_score = $similarity * $bobot;
-        // return array(
-        //     'jawaban_mahasiswa' => $process->jawaban,
-        //     'kunci_jawaban' => $process->kunci_jawaban,
-        //     'winnowing_jawaban' => json_encode($process->winnowing_jawaban_essay),
-        //     'winnowing_kunci_jawaban' => json_encode($process->winnowing_kunci_jawaban),
-        //     'dot_product' => $process->dot_product,
-        //     'magnitude_esai' => $process->magnitude_esai,
-        //     'magnitude_kunci_jawaban' => $process->magnitude_kj,
-        //     'similarity' => $similarity,
-        //     'hasil_nilai' => (int)round($final_score)
-        // );
-        return $process;
+        $process = $this->penilaian($jawaban, $kunci_jawaban, $bobot);
+        return array(
+            'jawaban_preprocessing' => $process->jawaban_preprocessing,
+            'kunci_jawaban_preprocessing' => $process->kunci_jawaban_preprocessing,
+            // 'jawaban_stopwords' => $process->jawaban_essay_stopwords,
+            // 'kunci_jawaban_stopwords' => $process->kunci_jawaban_stopwords,
+            // 'stemming_jawaban' => $process->stemming_jawaban,
+            // 'stemming_kunci_jawaban' => $process->stemming_kj,
+            'n_gram_jawaban' => json_encode($process->n_gram_jawaban),
+            'n_gram_kunci_jawaban' => json_encode($process->n_gram_kunci_jawaban),
+            'rolling_hash_jawaban' => json_encode($process->rolling_hash_jawaban),
+            'rolling_hash_kunci_jawaban' => json_encode($process->rolling_hash_kj),
+            'winnowing_jawaban' => json_encode($process->winnowing_jawaban_essay),
+            'winnowing_kunci_jawaban' => json_encode($process->winnowing_kunci_jawaban),
+            // 'frequency_winnowing_jawaban' => json_encode($process->jawaban_frequency),
+            // 'frequency_winnowing_kunci_jawaban' => json_encode($process->kj_frequency),
+            'dot_product' => $process->dot_product,
+            'magnitude_jawaban' => $process->magnitude_esai,
+            'magnitude_kj' => $process->magnitude_kj,
+            'similarity' => $process->similarity,
+            'hasil_nilai' => $process->nilai_perolehan
+        );
+        return ($process);
     }
 
-    private function text_preprocessing(string $jawaban, string $kunci_jawaban, int $bobot)
+    private function penilaian(string $jawaban, string $kunci_jawaban, int $bobot)
     {
-        $preprocessing_jawaban = strip_tags($jawaban);
-        $preprocessing_kunci_jawaban = strip_tags($kunci_jawaban);
-
-        $preprocessing_jawaban = html_entity_decode($preprocessing_jawaban);
-        $preprocessing_kunci_jawaban = html_entity_decode($preprocessing_kunci_jawaban);
-
-        $preprocessing_jawaban = preg_replace('/[^\w\s]/u', '', $preprocessing_jawaban);
-        $preprocessing_kunci_jawaban = preg_replace('/[^\w\s]/u', '', $preprocessing_kunci_jawaban);
-
-        $preprocessing_jawaban = preg_replace('/\s+/', ' ', $preprocessing_jawaban);
-        $preprocessing_kunci_jawaban = preg_replace('/\s+/', ' ', $preprocessing_kunci_jawaban);
-
-        $preprocessing_jawaban = trim($preprocessing_jawaban);
-        $preprocessing_kunci_jawaban = trim($preprocessing_kunci_jawaban);
-
-        $preprocessing_jawaban = strtolower($preprocessing_jawaban);
-        $preprocessing_kunci_jawaban = strtolower($preprocessing_kunci_jawaban);
-
         $data = array(
-            'jawaban_esai' => $preprocessing_jawaban,
-            'kunci_jawaban_esai' => $preprocessing_kunci_jawaban,
+            'jawaban_esai' => $jawaban,
+            'kunci_jawaban_esai' => $kunci_jawaban,
             'bobot' => $bobot
         );
 
@@ -364,101 +334,4 @@ class Essay_Controller extends Essay
         curl_close($ch);
         return json_decode($response);
     }
-
-    // private function tokenization(string $kalimat, int $n): array
-    // {
-    //     $tokenSize = $n;
-    //     if (strlen($kalimat) == 0) {
-    //         return array();
-    //     }
-    //     if (strlen($kalimat) < $n) {
-    //         $tokenSize = strlen($kalimat);
-    //     }
-    //     $whitespace_removal = str_replace(" ", "", $kalimat);
-    //     $n_grams = $n_gram = [];
-    //     for ($i = 0; $i < strlen($whitespace_removal); $i++) {
-    //         array_push($n_gram, $whitespace_removal[$i]);
-    //         array_push($n_grams, implode($n_gram));
-    //         if ($i >= ($tokenSize - 1)) {
-    //             array_shift($n_gram);
-    //         }
-    //     }
-    //     while (--$tokenSize) {
-    //         array_shift($n_grams);
-    //     }
-    //     return $n_grams;
-    // }
-
-    // private function rolling_hash(array $pattern, int $windowSize, int $base = 26, int $mod = 1000000007): array
-    // {
-    //     $n = sizeof($pattern);
-    //     if ($n == 0) {
-    //         return array(0);
-    //     }
-    //     // Array untuk menyimpan hasil pangkat base modulo mod
-    //     $power = array_fill(0, $n + 1, 1);
-    //     // Array untuk menyimpan nilai hash dari setiap window substring
-    //     $hashValues = array();
-    //     // Precompute the powers of the base modulo the mod
-    //     for ($i = 1; $i <= $n; $i++) {
-    //         $power[$i] = ($power[$i - 1] * $base) % $mod;
-    //     }
-    //     // Compute the hash value of the first window
-    //     $currentHash = 0;
-    //     for ($i = 0; $i < $windowSize; $i++) {
-    //         $currentHash = ($currentHash * $base + ord($pattern[$i])) % $mod;
-    //     }
-    //     $hashValues[0] = $currentHash;
-    //     // Compute the hash values of the rest of the substrings
-    //     for ($i = 1; $i <= $n - $windowSize; $i++) {
-    //         // Remove the contribution of the first character in the window
-    //         $currentHash = (($currentHash - $power[$windowSize - 1] * ord($pattern[$i - 1])) % $mod + $mod) % $mod;
-    //         // Shift the window by one character and add the new character to the hash
-    //         $currentHash = ($currentHash * $base + ord($pattern[$i + $windowSize - 1])) % $mod;
-    //         // Simpan nilai hash pada array hashValues
-    //         $hashValues[$i] = $currentHash;
-    //     }
-    //     // Mengembalikan array hashValues yang berisi hash untuk setiap window substring
-    //     return $hashValues;
-    // }
-
-    // private function winnowing(array $hash_value, int $k): array
-    // {
-    //     $results = [];
-    //     for ($i = 0; $i < sizeof($hash_value) - $k; $i++) {
-    //         $window = array_slice($hash_value, $i, $k);
-    //         $min_hash = min($window);
-    //         array_push($results, $min_hash);
-    //     }
-
-    //     return $results;
-    // }
-
-    // private function cosine_similarity(array $kunci_jawaban, array $jawaban)
-    // {
-    //     // Calculate dot product 
-    // $length = max(count($kunci_jawaban), count($jawaban));
-    // $kunci_jawaban = array_pad($kunci_jawaban, $length, 0);
-    // $jawaban = array_pad($jawaban, $length, 0);
-
-    // $intersection = (array_intersect($jawaban, $kunci_jawaban));
-    // if (count($intersection) === 0) {
-    //     $similarity = 0;
-    // } else {
-    //     $dotProduct = 0;
-    //     for ($i = 0; $i < $length; $i++) {
-    //         $dotProduct += $kunci_jawaban[$i] * $jawaban[$i];
-    //     }
-    //     // Calculate magnitudes
-    //     $magnitude1 = sqrt(array_sum(array_map(function ($x) {
-    //         return $x * $x;
-    //     }, $kunci_jawaban)));
-    //     $magnitude2 = sqrt(array_sum(array_map(function ($y) {
-    //         return $y * $y;
-    //     }, $jawaban)));
-    //     // Calculate cosine similarity
-    //     $similarity = $dotProduct / ($magnitude1 * $magnitude2);
-    // }
-    // return $similarity;
-    // }
 }

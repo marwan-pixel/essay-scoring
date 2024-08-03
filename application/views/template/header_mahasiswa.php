@@ -21,7 +21,7 @@
             <div class="d-flex flex-column flex-shrink-0 p-3 text-white bg-dark" style="width: 20%; overflow-y: auto;">
                 <a href="<?= current_url(); ?>" class="d-flex px-3 align-items-center mb-3 mb-md-0 me-md-auto text-white active text-decoration-none">
                     <span class="fs-6">
-                        <span class="text-center">Mahasiswa: <?= $this->session->userdata('npm'); ?></span>
+                        <span class="text-center">Mahasiswa: <?= $this->session->userdata('nama_mahasiswa') ?? $this->session->userdata('npm'); ?></span>
                     </span>
                 </a>
                 <hr>

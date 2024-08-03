@@ -77,7 +77,7 @@ $('.akhiri-ujian-button').on('click', function(e) {
     const href = $(this).attr('href');
     Swal.fire({
         title: 'Konfirmasi',
-        text: " Apakah anda yakin ingin mengakhiri ujian ini?",
+        text: " Apakah anda yakin ingin mengakhiri ujian ini? Setelah mengakhiri ujian ini anda tidak dapat ujian ini lagi",
         icon: 'warning',
         showCancelButton: true,
         cancelButtonText: 'Tidak',

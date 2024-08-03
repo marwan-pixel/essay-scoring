@@ -66,7 +66,7 @@ if (is_null($this->session->userdata('nip'))) {
             ?>
                     <tr>
                         <td><?= ++$key ?></td>
-                        <td><?= $data['npm'] ?></td>
+                        <td><?= $data['nama_mahasiswa'] . ' (' . $data['npm'] . ')' ?></td>
                         <td>
                             <a href="<?= base_url('memberi_akses_ujian/' . $data['npm'] . '/' .  $kd_kelas . '/' . $kd_progstudi . '/' . $semester . '/' . $kd_matkul . '/' . ($data['akses_ujian'] == 0 ? 3 : 0)); ?>" class="btn <?= $data['akses_ujian'] == 4 ? 'btn-secondary disabled' : 'btn-primary' ?>"><?= $data['akses_ujian'] == 3 ? 'Tutup Akses UTS' : 'Beri Akses UTS' ?></a>
                             <a href="<?= base_url('memberi_akses_ujian/' . $data['npm'] . '/' .  $kd_kelas . '/' . $kd_progstudi . '/' . $semester . '/' . $kd_matkul . '/' . ($data['akses_ujian'] == 0 ? 4 : 0)); ?>" class="btn <?= $data['akses_ujian'] == 3 ? 'btn-secondary disabled' : 'btn-primary' ?>"><?= $data['akses_ujian'] == 4 ? 'Tutup Akses UAS' : 'Beri Akses UAS' ?></a>
