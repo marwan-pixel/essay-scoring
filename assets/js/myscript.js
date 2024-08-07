@@ -20,7 +20,11 @@ $('.update-status-soal').on('click', function(e) {
 $('.tambah-data-soal').on('submit', function(e) {
     e.preventDefault();
     Swal.fire({
+<<<<<<< HEAD
+        title: 'Menambah Data Soal',
+=======
         title: 'Menyimpan Data Soal',
+>>>>>>> 518c5dffa9444c60e25e8ff5f447792e3b9daee0
         text: " Apakah anda yakin ingin menyimpan data soal ini?",
         icon: 'question',
         showCancelButton: true,
@@ -70,6 +74,8 @@ $('.logout').on('click', function(e) {
             document.location.href = href;
         }
     });
+<<<<<<< HEAD
+=======
 });
 
 $('.akhiri-ujian-button').on('click', function(e) {
@@ -89,4 +95,5 @@ $('.akhiri-ujian-button').on('click', function(e) {
             document.location.href = href;
         }
     })
+>>>>>>> 518c5dffa9444c60e25e8ff5f447792e3b9daee0
 });
