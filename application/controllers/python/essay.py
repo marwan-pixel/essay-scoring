@@ -18,12 +18,23 @@ class RequestHandler(BaseHTTPRequestHandler):
 
             def preprocess_text(text):
                 text = BeautifulSoup(text, 'html.parser').get_text()
-                text = unescape(text)
-                text = re.sub(r'[^\w\s]', '', text)
+                text = unescape(text)   
+                
                 text = re.sub(r'\s+', ' ', text)
+                # text = re.sub(r'^\d+\.\s*', '', text)
+
+                text = re.sub(r'\b(?:\d+|[a-zA-Z])\.\s*', '', text)
+                
+                # Hapus koma yang bukan bagian dari angka desimal
+                text = re.sub(r'(?<!\d),(?!\d)', '', text)
+                
+                # Hapus tanda titik yang mengikuti huruf tunggal bukan alphabet list
+                text = re.sub(r'\b([a-zA-Z])\.(?!\s*[a-zA-Z])', r'\1', text)
+                text = re.sub(r'(?<!\d)[^\w\s,]|[^\w\s,](?!\d)', '', text)
                 text = text.strip()
                 text = text.lower()
                 return text
+
 
             def stop_words(kalimat):
                 token = word_tokenize(kalimat.lower())
@@ -89,7 +100,7 @@ class RequestHandler(BaseHTTPRequestHandler):
                 magnitude_vec1 = np.linalg.norm(vec1)
                 magnitude_vec2 = np.linalg.norm(vec2)
                 similarity = dot_product / (magnitude_vec1 * magnitude_vec2)
-                return dot_product, magnitude_vec1, magnitude_vec2, similarity, text1_frequency, text2_frequency
+                return dot_product, magnitude_vec1, magnitude_vec2, similarity
             
             def nilai_perolehan(similarity, bobot_soal):
                 return round(similarity * bobot_soal)
@@ -98,37 +109,42 @@ class RequestHandler(BaseHTTPRequestHandler):
             kunci_jawaban_essay = data['kunci_jawaban_esai']
             bobot_soal = data['bobot']
 
-            text_preprocessing_jawaban = preprocess_text(jawaban_essay)
-            text_preprocessing_kj = preprocess_text(kunci_jawaban_essay)
-
-            jawaban_essay_stopwords = stop_words(text_preprocessing_jawaban)
-            kunci_jawaban_stopwords = stop_words(text_preprocessing_kj)
-
-            jawaban_essay_stemming = stemming(jawaban_essay_stopwords)
-            kunci_jawaban_stemming = stemming(kunci_jawaban_stopwords)
-
-            jawaban_essay_stemming = sinonim_kata(jawaban_essay_stemming, kunci_jawaban_stemming)
-
             w = n = 0
-
-            if(len(jawaban_essay) < 3 or len(kunci_jawaban_essay) < 3):
+            if(len(jawaban_essay) < 2 or len(kunci_jawaban_essay) < 2):
                 w = n = len(jawaban_essay) or len(kunci_jawaban_essay)
             else:
-                w = 3
-                n = 4
+                w = 2
+                n = 7
+
+            text_preprocessing_jawaban = preprocess_text(jawaban_essay)
+            jawaban_essay_stopwords = stop_words(text_preprocessing_jawaban)
+            jawaban_essay_stemming = stemming(jawaban_essay_stopwords)
             jawaban_essay_ngram = n_gram(jawaban_essay_stemming, w)
-            kunci_jawaban_ngram = n_gram(kunci_jawaban_stemming, w)   
-
             jawaban_essay_rolling = rolling_hash(jawaban_essay_ngram)
-            kunci_jawaban_rolling = rolling_hash(kunci_jawaban_ngram)
-
             winnowing_jawaban_essay = winnowing(jawaban_essay_rolling, n)
-            winnowing_kunci_jawaban = winnowing(kunci_jawaban_rolling, n)
-            
-            if(len(kunci_jawaban_essay) == 0 or len(jawaban_essay) == 0):
+
+            if(len(kunci_jawaban_essay) == 0 or (bobot_soal) == 0):
+                dot_product = magnitude_esai = magnitude_kj = similarity = 0
+                text_preprocessing_kj = []
+                kunci_jawaban_stopwords = []
+                kunci_jawaban_stemming = []
+                kunci_jawaban_ngram = []
+                kunci_jawaban_rolling = []
+                winnowing_kunci_jawaban = []
+                jawaban_essay_stemming = []
+            else:
+                text_preprocessing_kj = preprocess_text(kunci_jawaban_essay)
+                kunci_jawaban_stopwords = stop_words(text_preprocessing_kj)
+                kunci_jawaban_stemming = stemming(kunci_jawaban_stopwords)
+                # jawaban_essay_stemming = sinonim_kata(jawaban_essay_stemming, kunci_jawaban_stemming)
+                kunci_jawaban_ngram = n_gram(kunci_jawaban_stemming, w)   
+                kunci_jawaban_rolling = rolling_hash(kunci_jawaban_ngram)
+                winnowing_kunci_jawaban = winnowing(kunci_jawaban_rolling, n)
+                
+            if(len(kunci_jawaban_essay) == 0):
                 dot_product = magnitude_esai = magnitude_kj = similarity = 0 # type: ignore
             else:
-                dot_product, magnitude_esai, magnitude_kj, result, jawaban_frequency, kj_frequency = calculate_similarity(winnowing_jawaban_essay, winnowing_kunci_jawaban)
+                dot_product, magnitude_esai, magnitude_kj, result = calculate_similarity(winnowing_jawaban_essay, winnowing_kunci_jawaban)
                 # similarity_result, intersection = jaccard_similarity(winnowing_jawaban_essay, winnowing_kunci_jawaban) # 
                 similarity = result # type: ignore
             
@@ -147,8 +163,6 @@ class RequestHandler(BaseHTTPRequestHandler):
                 'rolling_hash_kj': kunci_jawaban_rolling,
                 'winnowing_jawaban_essay': winnowing_jawaban_essay,
                 'winnowing_kunci_jawaban': winnowing_kunci_jawaban,
-                'jawaban_frequency': jawaban_frequency,
-                'kj_frequency': kj_frequency,
                 'dot_product': str(dot_product),
                 'magnitude_esai': magnitude_esai,
                 'magnitude_kj': magnitude_kj,

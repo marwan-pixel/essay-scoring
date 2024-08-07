@@ -289,8 +289,8 @@ class Essay_Controller extends Essay
     {
         $process = $this->penilaian($jawaban, $kunci_jawaban, $bobot);
         return array(
-            'jawaban_preprocessing' => $process->jawaban_preprocessing,
-            'kunci_jawaban_preprocessing' => $process->kunci_jawaban_preprocessing,
+            'jawaban_preprocessing' => $process->stemming_jawaban,
+            'kunci_jawaban_preprocessing' => $process->stemming_kj,
             // 'jawaban_stopwords' => $process->jawaban_essay_stopwords,
             // 'kunci_jawaban_stopwords' => $process->kunci_jawaban_stopwords,
             // 'stemming_jawaban' => $process->stemming_jawaban,
