@@ -222,16 +222,19 @@ class Essay extends CI_Controller
             item_desc: 'thn_akademik'
         );
 
-        $daftar_mata_kuliah = [];
+        $data_matkul = [];
         if (!is_null($this->session->userdata('thn_akademik'))) {
             $data_matkul = [
                 'thn_akademik' => $this->session->userdata('thn_akademik'),
                 'npm' => $this->session->userdata('npm'),
             ];
-        } else if ($this->input->post('thn_akademik')) {
+        }
+        if ($this->input->post('thn_akademik')) {
+            // var_dump($this->input->post('thn_akademik'));
+            // die();
             $this->session->set_userdata(['thn_akademik' => $this->input->post('thn_akademik')]);
             $data_matkul = [
-                'thn_akademik' => $this->input->post('thn_akademik'),
+                'thn_akademik' => $this->session->userdata('thn_akademik'),
                 'npm' => $this->session->userdata('npm'),
             ];
         } else {
@@ -240,6 +243,7 @@ class Essay extends CI_Controller
                 'npm' => $this->session->userdata('npm'),
             ];
         }
+
         $this->mata_kuliah = $this->db->select('cbt_kontrak_matakuliah.kd_matkul, cbt_kontrak_matakuliah.akses_ujian, cbt_matkul.mata_kuliah, cbt_kontrak_matakuliah.semester')
             ->from('cbt_kontrak_matakuliah')
             ->join('cbt_matkul', 'cbt_kontrak_matakuliah.kd_matkul = cbt_matkul.kd_matkul')
